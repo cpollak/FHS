@@ -1,0 +1,448 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+
+@*<h1 id="UserName">'@ViewBag.UserName'</h1>*@
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.24/datatables.min.css" />
+<link href="~/css/loders.css" rel="stylesheet" />
+<style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+    .row::after {
+        content: "";
+        clear: both;
+        display: table;
+    }
+
+    [class*="col-"] {
+        float: left;
+        padding: 15px;
+    }
+
+    .col-1 {
+        width: 8.33%;
+    }
+
+    .col-2 {
+        width: 16.66%;
+    }
+
+    .col-3 {
+        width: 25%;
+    }
+
+    .col-4 {
+        width: 33.33%;
+    }
+
+    .col-5 {
+        width: 41.66%;
+    }
+
+    .col-6 {
+        width: 50%;
+    }
+
+    .col-7 {
+        width: 58.33%;
+    }
+
+    .col-8 {
+        width: 66.66%;
+    }
+
+    .col-9 {
+        width: 75%;
+    }
+
+    .col-10 {
+        width: 83.33%;
+    }
+
+    .col-11 {
+        width: 91.66%;
+    }
+
+    .col-12 {
+        width: 100%;
+    }
+
+    html {
+        font-family: "Lucida Sans", sans-serif;
+    }
+
+    .header {
+        /* background-color: #9933cc;
+        color: #ffffff;*/
+        padding: 15px;
+    }
+
+    .menu ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .menu li {
+        padding: 8px;
+        /* margin-bottom: 7px;
+        background-color: #33b5e5;
+        color: #ffffff;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);*/
+    }
+
+        .menu li:hover {
+            /*background-color: #0099cc;*/
+        }
+
+    .btn-warning {
+        padding: 3px 1rem;
+    }
+
+    table.dataTable thead th, table.dataTable thead td {
+        padding: 10px 0px;
+    }
+
+    table.dataTable thead > tr > th.sorting {
+        padding-right: 0px;
+        padding-left: 5px;
+    }
+</style>
+<div class="desutj">
+    <div class="loader"></div>
+</div>
+
+<div class="header">
+
+    <div class="form-group row">
+        <div class="col-md-1"></div>
+        <div class="col-md-2">
+            <label>Search by Name </label>
+            <input type="text" class="form-control" id="SearchbyName" placeholder="Search by name" />
+        </div>
+        <div class="col-md-2">
+            <label>Medicaid ID</label>
+            <input type="text" class="form-control" id="MedicaidID" placeholder="MedicaidID" />
+        </div>
+        <div class="col-md-2">
+            <label>Residence ID</label>
+            <input type="text" class="form-control" id="ResidenceID" placeholder="ResidenceID" />
+        </div>
+
+        <div class="col-md-2">
+            <label>Facility</label>
+            @Html.DropDownList("Facility", (IEnumerable<SelectListItem>)ViewBag.FacilityList, htmlAttributes: new { @class = "form-control" })
+
+        </div>
+        <div class="col-md-2">
+            <label>Status</label>
+            @Html.DropDownList("NextStepTask", (IEnumerable<SelectListItem>)ViewBag.FollowupStatusList, htmlAttributes: new { @class = "form-control" })
+        </div>
+        <div class="col-md-1">
+            <label></label>
+            <input type="button" id="Filter" value="Filter" class="btn btn-primary" />
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-2 menu">
+        <ul>
+
+
+            <li>
+                <label>Membership Status</label>
+                @Html.DropDownList("MembershipStatus", (IEnumerable<SelectListItem>)ViewBag.MembershipStatusList, htmlAttributes: new { @class = "form-control" })
+            </li>
+            <li>
+                <label>Certification Month</label>
+                @Html.DropDownList("RecertMonth", (IEnumerable<SelectListItem>)ViewBag.MonthList, htmlAttributes: new { @class = "form-control" })
+
+            </li>
+            <li>
+                <label>Language</label>
+                @Html.DropDownList("Language", (IEnumerable<SelectListItem>)ViewBag.LanguageList, "Select", htmlAttributes: new { @class = "form-control" })
+            </li>
+            <li>
+                <label>Follow-up times</label>
+                @Html.DropDownList("Followuptimes", (IEnumerable<SelectListItem>)ViewBag.FollowuptimesList, htmlAttributes: new { @class = "form-control" })
+
+                @*<input type="number" id="Followuptimes" min="1" oninput="this.value = Math.abs(this.value)" class="form-control" placeholder="Follow-up times" />*@
+            </li>
+            <li>
+                <label>Account Status</label>
+                <input type="text" class="form-control" placeholder="Account Status" readonly="readonly" />
+            </li>
+
+        </ul>
+    </div>
+
+    <div class="col-10">
+        <div class="card">
+            <div class="card-content collapse show">
+                <div class="card-body card-dashboard dataTables_wrapper dt-bootstrap">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered dom-jQuery-events" id="example">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        @Html.DisplayName("First Name")
+                                    </th>
+                                    <th>
+                                        @Html.DisplayName("Last Name")
+                                    </th>
+                                    @*<th>
+                                            @Html.DisplayName("Created Date")
+                                        </th>*@
+                                    <th>
+                                        @Html.DisplayName("MedicaidID")
+                                    </th>
+                                    <th>
+                                        @Html.DisplayName("ResidenceID")
+                                    </th>
+                                    <th>
+                                        @Html.DisplayName("Membership Status")
+                                    </th>
+                                    <th>
+                                        @Html.DisplayName("Language")
+                                    </th>
+                                    <th>
+                                        @Html.DisplayName("RecertMonth")
+                                    </th>
+                                    <th>
+                                        @Html.DisplayName("Facility")
+                                    </th>
+                                    @*<th>
+                                            @Html.DisplayName("Created by")
+                                        </th>*@
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tfbody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");
+
+
+    }
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+
+    <script>
+        $(".desutj").css("display", "none");
+        $(document).ready(function () {
+            let url = new URL(window.location.href);
+            let search_params = url.searchParams;
+            if (search_params.has('b')) {
+                SetPreviousValue();
+            }
+            else {
+                $("#Followuptimes").val(null);
+            }
+        $(".desutj").css("display", "block");
+        var FromDate = $("#FromDate").val();
+        var ToDate = $("#ToDate").val();
+        var SearchbyName = $("#SearchbyName").val();
+        var MedicaidID = $("#MedicaidID").val();
+        var ResidenceID = $("#ResidenceID").val();
+        var UserName = $("#UserName").val();
+        var Language = $("#Language").val();
+        var RecertMonth = $("#RecertMonth").val();
+        var MembershipStatus = $("#MembershipStatus").val();
+        var Followuptimes = $("#Followuptimes").val();
+        var Facility = $("#Facility").val();
+        var NextStepTask = $("#NextStepTask").val();
+
+        $.ajax({
+            url: '@Url.Action("MemberFilter", "Dashboard")',
+            type: "POST",
+            data: {
+                "FromDate": FromDate, "ToDate": ToDate, "SearchbyName": SearchbyName, "MedicaidID": MedicaidID, "ResidenceID": ResidenceID, "UserName": UserName, "Language": Language, "MembershipStatus": MembershipStatus, "RecertMonth": RecertMonth, "Followuptimes": Followuptimes, "Facility": Facility, "NextStepTask": NextStepTask},
+            success: function (data) {
+
+                $("#tfbody").html("");
+                var thtml = "";
+                if (data == "notDone") {
+                    var table = $('#example').DataTable();
+                    table.clear().draw();
+                    $(".desutj").css("display", "none");
+                }
+                else {
+                    myJsonData = data;
+                    populateDataTable(myJsonData);
+
+                    $(".desutj").css("display", "none");
+                }
+            },
+            error: function (Result) {
+            }
+        });
+        })
+        $('#example').DataTable({
+            'paging': true,
+            'lengthChange': true,
+            'searching': true,
+            "order": [],
+            'info': true,
+            'autoWidth': true,
+            "deferRender": true
+            //'columnDefs': [{
+            //    'targets': [4],
+            //    'orderable': false,
+            //}]
+        })
+
+        $("#UserName").text("Welcome " + '@ViewBag.UserName');
+
+        $("#Filter").click(function () {
+
+            $(".desutj").css("display", "block");
+        var FromDate = $("#FromDate").val();
+        var ToDate = $("#ToDate").val();
+        var SearchbyName = $("#SearchbyName").val();
+        var MedicaidID = $("#MedicaidID").val();
+        var ResidenceID = $("#ResidenceID").val();
+        var UserName = $("#UserName").val();
+        var Language = $("#Language").val();
+        var RecertMonth = $("#RecertMonth").val();
+        var MembershipStatus = $("#MembershipStatus").val();
+            var Followuptimes = $("#Followuptimes").val();
+            var Facility = $("#Facility").val();
+            var NextStepTask = $("#NextStepTask").val();
+
+        $.ajax({
+            url: '@Url.Action("MemberFilter", "Dashboard")',
+            type: "POST",
+            data: {
+                "FromDate": FromDate, "ToDate": ToDate, "SearchbyName": SearchbyName, "MedicaidID": MedicaidID, "ResidenceID": ResidenceID, "UserName": UserName, "Language": Language, "MembershipStatus": MembershipStatus, "RecertMonth": RecertMonth, "Followuptimes": Followuptimes, "Facility": Facility, "NextStepTask": NextStepTask},
+            success: function (data) {
+                $("#tfbody").html("");
+                var thtml = "";
+                if (data == "notDone") {
+                    var table = $('#example').DataTable();
+                    table.clear().draw();
+                    $(".desutj").css("display", "none");
+                }
+                else {
+                    myJsonData = data;
+                    populateDataTable(myJsonData);
+                    //var parsed = $.parseJSON(data);
+                    //var parsed = JSON.stringify(data);
+                    //$.each(data, function (index, value) {
+                    //    //thtml += "<tr>";
+                    //    //thtml += "<td class='th-sm'>" + value.firstName + " ";
+                    //    //thtml += "</td>";
+                    //    //thtml += "<td class='th-sm'>" + value.lastName + " ";
+                    //    //thtml += "</td>";
+                    //    //thtml += "<td class='th-sm'>" + value.createdDate + " ";
+                    //    //thtml += "</td>";
+                    //    //thtml += "<td class='th-sm'>" + value.medicaidID + " ";
+                    //    //thtml += "</td>";
+                    //    //thtml += "<td class='th-sm'>" + value.residentID + " ";
+                    //    //thtml += "</td>";
+                    //    //thtml += "<td class='th-sm'>" + value.membershipStatu + " ";
+                    //    //thtml += "</td>";
+                    //    //thtml += "<td class='th-sm'>" + value.language + " ";
+                    //    //thtml += "</td>";
+                    //    //thtml += "<td class='th-sm'>" + value.createdUser + " ";
+                    //    //thtml += "</td>";
+                    //    //thtml += "</tr>";
+
+                    //})
+                    //$("#tfbody").append(thtml);
+                    $(".desutj").css("display", "none");
+                }
+            },
+            error: function (Result) {
+            }
+        });
+    })
+        function populateDataTable(data) {
+            $("#example").DataTable().clear();
+            $.each(data, function (index, value) {
+                $('#example').dataTable().fnAddData([
+                    (value.firstName == null ? "" : value.firstName),
+                    (value.lastName == null ? "" : value.lastName),
+                    //(value.createdDate == null ? "" : value.createdDate),
+                    (value.medicaidID == null ? "" : value.medicaidID),
+                    (value.residentID == null ? "" : value.residentID),
+                    (value.membershipStatu == null ? "" : value.membershipStatu),
+                    (value.language == null ? "" : value.language),
+                    (value.recertMonth == null ? "" : value.recertMonth),
+                    (value.facility == null ? "" : value.facility),
+                    '<a class="btn btn-warning" href="/Member/Workfollow?memberId=' + value.memberID + '">View</a>'
+                ]);
+            })
+        }
+        $(window).on('beforeunload', function () {
+            var FromDate = $("#FromDate").val();
+            var ToDate = $("#ToDate").val();
+            var SearchbyName = $("#SearchbyName").val();
+            var MedicaidID = $("#MedicaidID").val();
+            var ResidenceID = $("#ResidenceID").val();
+            var UserName = $("#UserName").val();
+            var Language = $("#Language").val();
+            var RecertMonth = $("#RecertMonth").val();
+            var MembershipStatus = $("#MembershipStatus").val();
+            var Followuptimes = $("#Followuptimes").val();
+            var Facility = $("#Facility").val();
+            var NextStepTask = $("#NextStepTask").val();
+
+            localStorage.setItem("FromDate", FromDate);
+            localStorage.setItem("ToDate", ToDate);
+            localStorage.setItem("SearchbyName", SearchbyName);
+            localStorage.setItem("MedicaidID", MedicaidID);
+            localStorage.setItem("ResidenceID", ResidenceID);
+            localStorage.setItem("UserName", UserName);
+            localStorage.setItem("Language", Language);
+            localStorage.setItem("RecertMonth", RecertMonth);
+            localStorage.setItem("MembershipStatus", MembershipStatus);
+            localStorage.setItem("Followuptimes", Followuptimes);
+            localStorage.setItem("Facility", Facility);
+            localStorage.setItem("NextStepTask", NextStepTask);
+            localStorage.setItem("FromDate", FromDate);
+        });
+
+        function SetPreviousValue() {
+            if (localStorage.getItem("FromDate") != null)
+                $("#FromDate").val(localStorage.getItem("FromDate") );
+            if (localStorage.getItem("ToDate") != null)
+                $("#ToDate").val(localStorage.getItem("ToDate"));
+            if (localStorage.getItem("SearchbyName") != null)
+                $("#SearchbyName").val(localStorage.getItem("SearchbyName"));
+            if (localStorage.getItem("MedicaidID") != null)
+                $("#MedicaidID").val(localStorage.getItem("MedicaidID"));
+            if (localStorage.getItem("ResidenceID") != null)
+                $("#ResidenceID").val(localStorage.getItem("ResidenceID"));
+            if (localStorage.getItem("UserName") != null)
+                $("#UserName").val(localStorage.getItem("UserName"));
+            if (localStorage.getItem("Language") != null)
+                $("#Language").val(localStorage.getItem("Language"));
+            if (localStorage.getItem("RecertMonth") != null)
+                $("#RecertMonth").val(localStorage.getItem("RecertMonth"));
+            if (localStorage.getItem("MembershipStatus") != null)
+                $("#MembershipStatus").val(localStorage.getItem("MembershipStatus"));
+            if (localStorage.getItem("Followuptimes") != null)
+                $("#Followuptimes").val(localStorage.getItem("Followuptimes"));
+            if (localStorage.getItem("Facility") != null)
+                $("#Facility").val(localStorage.getItem("Facility"));
+            if (localStorage.getItem("NextStepTask") != null)
+                $("#NextStepTask").val(localStorage.getItem("NextStepTask"));
+        }
+    </script>
+
+}

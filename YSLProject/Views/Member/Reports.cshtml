@@ -1,0 +1,50 @@
+﻿@model YSLProject.Models.MemberMasterModel
+
+@{
+    ViewData["Title"] = "Reports";
+}
+<style>
+    .btn-warning, .btn-danger {
+        padding: 3px 1rem;
+    }
+</style>
+
+
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Reports" enctype="multipart/form-data">
+            <div class="form-group row">
+                <div class="col-md-3">
+                    @Html.DropDownListFor(model => model.ReportsType, (IEnumerable<SelectListItem>)ViewBag.ReportTypes, htmlAttributes: new { @class = "form-control" })
+
+                </div>
+                <div class="col-md-3">
+                    <input type="submit" value="Generate Report" class="btn btn-primary" style="display: block;" />
+
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+@section Scripts {
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        function GenerateReport() {
+
+             $.ajax({
+                        url: '@Url.Action("GenerateReport", "Member")',
+                 type: "POST",
+                 data: { "RType": $("#ReportType").val() },
+                 success: function (data) {
+                     //DownloadFile("NoncoverdActivity.pdf")
+                        },
+                        error: function (Result) {
+                        }
+                    });
+        }
+
+
+    </script>
+}

@@ -1,0 +1,338 @@
+﻿@model YSLProject.Models.MemberMasterModel
+
+@{
+    ViewData["Title"] = "EditMember";
+}
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<style>
+    #Professional {
+        margin-left: 54%;
+        height: 90%;
+    }
+
+    #ProfessionalDelete {
+        margin-left: 54%;
+        height: 90%;
+    }
+</style>
+
+<div class="card">
+    <div class="card-header">
+        <h4>Update Member</h4>
+        <hr />
+    </div>
+
+    <div class="card-content">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <form asp-action="EditMember">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        @Html.HiddenFor(model => model.MemberID)
+                        @Html.HiddenFor(model => model.WorkFlowStatus)
+                        @Html.HiddenFor(model => model.CreatedBy)
+                        @Html.HiddenFor(model => model.CDate)
+                        @*<div class="form-group">
+            <label asp-for="MemberID" class="control-label"></label>
+            <input asp-for="MemberID" class="form-control" />
+            <span asp-validation-for="MemberID" class="text-danger"></span>
+        </div>*@
+                        <div class="form-group row">
+                            <div class="col-md-4">
+                                @Html.LabelFor(model => model.FirstName, htmlAttributes: new { @class = "control-label " })
+                                @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-md-4">
+                                @Html.LabelFor(model => model.LastName, htmlAttributes: new { @class = "control-label " })
+                                @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-md-4">
+                                @Html.LabelFor(model => model.Address, htmlAttributes: new { @class = "control-label " })
+                                @Html.EditorFor(model => model.Address, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-4">
+                                <label asp-for="PrimaryPhone" class="control-label"></label>
+                                <input asp-for="PrimaryPhone" class="form-control" />
+                                <span asp-validation-for="PrimaryPhone" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="Email" class="control-label"></label>
+                                <input asp-for="Email" class="form-control" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="Language" class="control-label"></label>
+                                @*<input asp-for="Language" class="form-control" />
+                <span asp-validation-for="Language" class="text-danger"></span>*@
+                                @Html.DropDownListFor(model => model.Language, (IEnumerable<SelectListItem>)ViewBag.LanguageList, htmlAttributes: new { @class = "form-control" })
+                                <span asp-validation-for="Language" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-4">
+                                <label asp-for="CountyCode" class="control-label"></label>
+                                <input asp-for="CountyCode" class="form-control" />
+                                <span asp-validation-for="CountyCode" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="ResidentID" class="control-label"></label>
+                                <input asp-for="ResidentID" class="form-control" />
+                                <span asp-validation-for="ResidentID" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="MedicaidID" class="control-label"></label>
+                                <input asp-for="MedicaidID" class="form-control" />
+                                <span asp-validation-for="MedicaidID" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-4">
+                                <label asp-for="EnrollmentDate" class="control-label"></label>
+                                <input asp-for="EnrollmentDate" class="form-control" type="date" />
+                                <span asp-validation-for="EnrollmentDate" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="DisenrolmentDate" class="control-label"></label>
+                                <input asp-for="DisenrolmentDate" class="form-control" type="date" />
+                                <span asp-validation-for="DisenrolmentDate" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="MembershipStatus" class="control-label"></label>
+                                @*<input asp-for="MembershipStatus" class="form-control" />*@
+                                @Html.DropDownListFor(model => model.MembershipStatus, (IEnumerable<SelectListItem>)ViewBag.MembershipStatusList, htmlAttributes: new { @class = "form-control" })
+                                <span asp-validation-for="MembershipStatus" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-4">
+                                <label asp-for="DateOfBirth" class="control-label"></label>
+                                <input asp-for="DateOfBirth" class="form-control" type="date" />
+                                <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="ChartsID" class="control-label"></label>
+                                <input asp-for="ChartsID" class="form-control" />
+                                <span asp-validation-for="ChartsID" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="Phone" class="control-label"></label>
+                                <input asp-for="Phone" class="form-control" />
+                                <span asp-validation-for="Phone" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+
+                            <div class="col-md-3">
+                                <label asp-for="WorkFlowStatus" class="control-label"></label>
+                                <input asp-for="CurrentStatus" class="form-control" readonly />
+                                <span asp-validation-for="CurrentStatus" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-3">
+                                <label asp-for="InternalNotes" class="control-label"></label>
+                                <input asp-for="InternalNotes" class="form-control" />
+                                <span asp-validation-for="InternalNotes" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-3">
+                                <label asp-for="ExternalNotes" class="control-label"></label>
+                                <input asp-for="ExternalNotes" class="form-control" />
+                                <span asp-validation-for="ExternalNotes" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label asp-for="Facility" class="control-label"></label>
+                                @Html.DropDownListFor(model => model.Facility, (IEnumerable<SelectListItem>)ViewBag.Facility, htmlAttributes: new { @class = "form-control" })
+                                <span asp-validation-for="Facility" class="text-danger"></span>
+
+                            </div>
+
+                        </div>
+                        <br />
+                        <h4>Contact Information</h4>
+                        <hr />
+                        <div class="form-group row">
+                            <div class="col-md-2">
+                                <label class="control-label">RelationShip</label>
+                                @Html.EditorFor(model => model.contactModels[0].RelationShip, new { htmlAttributes = new { @type = "number", @min = "1", @step = "1", @value = "1", @class = "form-control", @style = "display:none" } })
+
+                            </div>
+                            <div class="col-md-2">
+                                <label class="control-label">Name</label>
+                                @Html.EditorFor(model => model.contactModels[0].Name, new { htmlAttributes = new { @class = "form-control", @style = "display:none" } })
+                            </div>
+                            <div class="col-md-2">
+                                <label class="control-label">Phone</label>
+                                @Html.EditorFor(model => model.contactModels[0].Phone, new { htmlAttributes = new { @class = "form-control", @style = "display:none" } })
+                            </div>
+                            <div class="col-md-2">
+                                <label class="control-label">Email</label>
+                                @Html.EditorFor(model => model.contactModels[0].Email, new { htmlAttributes = new { @class = "form-control", @style = "display:none" } })
+                            </div>
+                            <div class="col-md-3">
+                                <label class="control-label">Address</label>
+                                @Html.EditorFor(model => model.contactModels[0].Address, new { htmlAttributes = new { @class = "form-control", @style = "display:none" } })
+                            </div>
+                            <div class="col-md-1">
+                                <label class="control-label">Action</label>
+                            </div>
+                        </div>
+                        <div class="form-group row addmember">
+
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" value="Save" class="btn btn-primary" />
+                            <a asp-action="Index" class="btn btn-warning">Back to List</a>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+<script>
+       
+    $(document).ready(function () {
+        debugger;
+            @*var model = @Html.Raw(Json.Encode(Model.contactModels));*@
+            var model=JSON.parse('@Html.Raw(Json.Serialize(Model.contactModels))');
+
+            var m = 1;
+        if (model != null) {
+
+
+                 $(model).each(function (index, obj) {
+                    if (m != 1) {
+                        $(document).find("#Professional").attr('id', 'ProfessionalDelete');
+                        $("button#ProfessionalDelete").each(function (index2, obj2) {
+                            $(obj2).removeClass("fa fa-plus-square sdr test").addClass("fa fa-times sdr mansns");
+                            $(obj2).removeClass("btn-outline-success");
+                           // $(obj2).removeClass("btn");
+                            $(obj2).name;
+                        })
+                    }
+                    var pdi = $("<div class='col-md-12 form-group row Prof pre" + m + "'/>");
+                    var pdiv = $("<div class='col-md-2'/>");
+                    var RelationShip = $("<input />").attr("type", "number").attr("min", "1").attr("id", "contactModels_" + m + "__RelationShip").attr('name', 'contactModels[' + m + '].RelationShip').attr("class", "form-control text-box single-line");
+                    RelationShip.val(this.relationShip);
+                    pdiv.append(RelationShip);
+                    var pdiv2 = $("<div class='col-md-2'/>")
+                    var Name = $("<input />").attr("type", "textbox").attr("id", "contactModels_" + m + "__Name").attr('name', 'contactModels[' + m + '].Name').attr("class", "form-control text-box single-line");
+                    Name.val(this.name);
+                    pdiv2.append(Name);
+                    var pdiv3 = $("<div class='col-md-2'/>");
+                    var Phone = $("<input />").attr("type", "textbox").attr("id", "contactModels_" + m + "__Phone").attr('name', 'contactModels[' + m + '].Phone').attr("class", "form-control text-box single-line");
+                    Phone.val(this.phone);
+                    pdiv3.append(Phone);
+                    var pdiv4 = $("<div class='col-md-2'/>");
+                    var Email = $("<input />").attr("type", "textbox").attr("id", "contactModels_" + m + "__Email").attr('name', 'contactModels[' + m + '].Email').attr("class", "form-control text-box single-line");
+                    Email.val(this.email);
+                    pdiv4.append(Email);
+                    var pdiv5 = $("<div class='col-md-3'/>");
+                    var Address = $("<input />").attr("type", "textbox").attr("id", "contactModels_" + m + "__Address").attr('name', 'contactModels[' + m + '].Address').attr("class", "form-control text-box single-line");
+                    Address.val(this.address);
+                    pdiv5.append(Address);
+                    var pdiv6 = "<div class='col-md-1'><button type='button' name='name" + m + "' id='Professional'    class='btn btn-primary fa fa-plus-square sdr test delte" + m + "'></button></div>";
+                    pdi.append(pdiv, pdiv2, pdiv3, pdiv4, pdiv5, pdiv6)
+                    $(".addmember").append(pdi);
+                    m++;
+                })
+                m = m - 1;
+            }
+            else {
+                var pdi = $("<div class='col-md-12 form-group row Prof pre" + m + "'/>");
+                var pdiv = $("<div class='col-md-2'/>");
+                var RelationShip = $("<input />").attr("type", "number").attr("min", "1").attr("id", "contactModels_" + m + "__RelationShip").attr('name', 'contactModels[' + m + '].RelationShip').attr("class", "form-control text-box single-line");
+                pdiv.append(RelationShip);
+                var pdiv2 = $("<div class='col-md-2'/>")
+                var Name = $("<input />").attr("type", "textbox").attr("id", "contactModels_" + m + "__Name").attr('name', 'contactModels[' + m + '].Name').attr("class", "form-control text-box single-line");
+                pdiv2.append(Name);
+                var pdiv3 = $("<div class='col-md-2'/>");
+                var Phone = $("<input />").attr("type", "textbox").attr("id", "contactModels_" + m + "__Phone").attr('name', 'contactModels[' + m + '].Phone').attr("class", "form-control text-box single-line");
+                pdiv3.append(Phone);
+                var pdiv4 = $("<div class='col-md-2'/>");
+                var Email = $("<input />").attr("type", "textbox").attr("id", "contactModels_" + m + "__Email").attr('name', 'contactModels[' + m + '].Email').attr("class", "form-control text-box single-line");
+                pdiv4.append(Email);
+                var pdiv5 = $("<div class='col-md-3'/>");
+                 var Address = $("<input />").attr("type", "textbox").attr("id", "contactModels_" + m + "__Address").attr('name', 'contactModels[' + m + '].Address').attr("class", "form-control text-box single-line");
+                pdiv5.append(Address);
+                var pdiv6 = "<div class='col-md-1'><button type='button' name='name" + m + "' id='Professional'    class='btn btn-primary fa fa-plus-square sdr test delte" + m + "'></button></div>";
+                pdi.append(pdiv, pdiv2, pdiv3, pdiv4, pdiv5, pdiv6)
+                $(".addmember").append(pdi);
+            }
+
+            jQuery(document).on('click', '#Professional', function () {
+
+                m++;
+                $(this).removeAttr('id');
+                $(this).attr('id', 'ProfessionalDelete');
+                $(this).removeClass("fa fa-plus-square sdr test").addClass("fa fa-times sdr mansns");
+                $(this).removeClass("btn-outline-success");
+                //$(this).removeClass("btn");
+                var pdi = $("<div class='col-md-12 form-group row Prof pre" + m + "'/>");
+                var pdiv = $("<div class='col-md-2'/>");
+                var RelationShip = $("<input />").attr("type", "number").attr("min", "1").attr("id", "contactModels_" + m + "__RelationShip").attr('name', 'contactModels[' + m + '].RelationShip').attr("class", "form-control text-box single-line");
+                pdiv.append(RelationShip);
+                var pdiv2 = $("<div class='col-md-2'/>")
+                var Name = $("<input />").attr("type", "textbox").attr("id", "contactModels_" + m + "__Name").attr('name', 'contactModels[' + m + '].Name').attr("class", "form-control text-box single-line");
+                pdiv2.append(Name);
+                var pdiv3 = $("<div class='col-md-2'/>");
+                var Phone = $("<input />").attr("type", "textbox").attr("id", "contactModels_" + m + "__Phone").attr('name', 'contactModels[' + m + '].Phone').attr("class", "form-control text-box single-line");
+                pdiv3.append(Phone);
+                var pdiv4 = $("<div class='col-md-2'/>");
+                var Email = $("<input />").attr("type", "textbox").attr("id", "contactModels_" + m + "__Email").attr('name', 'contactModels[' + m + '].Email').attr("class", "form-control text-box single-line");
+                pdiv4.append(Email);
+                var pdiv5 = $("<div class='col-md-3'/>");
+                var Address = $("<input />").attr("type", "textbox").attr("id", "contactModels_" + m + "__Address").attr('name', 'contactModels[' + m + '].Address').attr("class", "form-control text-box single-line");
+                pdiv5.append(Address);
+                var pdiv6 = "<div class='col-md-1'><button type='button' name='name" + m + "' id='Professional'    class='btn btn-primary fa fa-plus-square sdr test delte" + m + "'></button></div>";
+                pdi.append(pdiv, pdiv2, pdiv3, pdiv4, pdiv5, pdiv6)
+                $(".addmember").append(pdi);
+
+            });
+
+            $(document).on('click', '#ProfessionalDelete', function () {
+
+                var num = (this.name).match(/\d+/g);
+
+                $(this).parent("div").parent("div").remove();
+                i = 1;
+                $(".Prof").each(function (index, obj) {
+
+                    var nums = $(obj).find("button");
+                    var vale = nums[0].name.match(/\d+/g);
+                    var dsds = $(obj).closest("div").find('div')[0].children[0].id;
+                    var dsw = dsds.match(/\d+/g);
+                    var smalid = dsw[0];
+
+                    $("#contactModels_" + smalid + "__RelationShip").attr("name", "contactModels[" + i + "].RelationShip")
+                    $("#contactModels_" + smalid + "__RelationShip").attr("id", "contactModels_" + i + "__RelationShip")
+                    $("#contactModels_" + smalid + "__Name").attr("name", "contactModels[" + i + "].Name")
+                    $("#contactModels_" + smalid + "__Name").attr("id", "contactModels_" + i + "__Name")
+                    $("#contactModels_" + smalid + "__Phone").attr("name", "contactModels[" + i + "].Phone")
+                    $("#contactModels_" + smalid + "__Phone").attr("id", "contactModels_" + i + "__Phone")
+                    $("#contactModels_" + smalid + "__Email").attr("name", "contactModels[" + i + "].Email")
+                    $("#contactModels_" + smalid + "__Email").attr("id", "contactModels_" + i + "__Email")
+                    $("#contactModels_" + smalid + "__Address").attr("name", "contactModels[" + i + "].Address")
+                    $("#contactModels_" + smalid + "__Address").attr("id", "contactModels_" + i + "__Address")
+                    $(obj).find(".sdr").attr("name", "name" + i);
+                    var element = $(obj).find(".sdr");
+                    element[0].className = element[0].className.replace("delte" + smalid, "delte" + i);
+                    i++;
+                })
+                m = i - 1;
+            });
+        })
+</script>
+}

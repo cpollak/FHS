@@ -1,0 +1,92 @@
+﻿@model YSLProject.Models.MemberMasterModel
+
+@{
+    ViewData["Title"] = "AddMember";
+}
+
+<h3>Import Member Contacts</h3>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<hr />
+<style>
+    #Professional {
+        margin-left: 54%;
+        height: 90%;
+    }
+
+    #ProfessionalDelete {
+        margin-left: 54%;
+        height: 90%;
+    }
+</style>
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="UploadAddMemberContacts" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @*<div class="form-group">
+                    <label asp-for="MemberID" class="control-label"></label>
+                    <input asp-for="MemberID" class="form-control" />
+                    <span asp-validation-for="MemberID" class="text-danger"></span>
+                </div>*@
+           
+        <div class="form-group row">
+            
+            <div class="col-md-4">
+                <label class="control-label ">Upload File</label>
+                <input type="file" name="postedFile" style="display: block;" required />
+            </div>
+            <div class="col-md-2">
+                <label class="control-label ">&nbsp;</label>
+                <input type="submit" value="Save" class="btn btn-primary sve" style="display: block;" />
+            </div>
+        </div>
+            <div class="form-group">
+                
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    @*<a asp-action="Index">Back to List</a>*@
+</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+<script>
+
+    //$(".sve").click(function () {
+    //    debugger;
+    //    if ($("form").valid() == false) {
+    //        return false;
+    //    }
+    //});
+
+    //$(function () {
+    //    $(".Fromdatepicker").datepicker({
+
+    //        dateFormat: "dd-MM-yy",
+    //        changeMonth: true,
+    //        changeYear: true,
+    //        yearRange: "c-20:c+20",
+    //        //  minDate: new Date(1999, 0, 1)
+    //        //maxDate: new Date(2018, 0, 1)
+    //    });
+
+    //});
+
+    function ChangeMemberStatus() {
+        var status = $("#ddlMemberStatus").val();
+        if (status == "1") {
+            $("#divFacility").css("display", "inline")
+            $("#divDate").css("display", "inline")
+        }
+        else {
+            $("#divFacility").css("display", "none")
+            $("#divDate").css("display", "none")
+        }
+    }
+</script>
+}
+
+

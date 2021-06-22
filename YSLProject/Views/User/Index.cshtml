@@ -1,0 +1,105 @@
+﻿@model IEnumerable<YSLProject.Models.UserMasterModel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+<style>
+    .btn-warning, .btn-danger {
+        padding: 3px 1rem;
+    }
+</style>
+<div class="form-group row">
+    <div class="col-md-6">
+        <h2>User List</h2>
+    </div>
+    <div class="col-md-6" style="text-align:end;">
+        <a class="btn btn-primary" asp-area="" asp-controller="User" asp-action="Create">Add New</a>
+    </div>
+</div>
+
+@*<p>
+        <a asp-action="Create">Create New</a>
+    </p>*@
+
+<div class="card">
+    <div class="card-content collapse show">
+        <div class="card-body card-dashboard dataTables_wrapper dt-bootstrap">
+            <div class="table-responsive">
+                @*<table class="table table-striped table-bordered dom-jQuery-events">*@
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+
+                            <th>
+                                @Html.DisplayName("User Name")
+                            </th>
+                            <th>
+                                @Html.DisplayName("Email")
+                            </th>
+                            <th>
+                                @Html.DisplayName("IsActive")
+                            </th>
+                            <th>
+                                @Html.DisplayName("Last LoginDate")
+                            </th>
+                            <th>
+                                @Html.DisplayName("User Type")
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.UserName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.UserEmail)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.IsActives)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.LoginDate)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.UserTypes)
+                                </td>
+                                <td>
+                                    @Html.ActionLink("Edit", "Edit", new { Id = item.UserID }, new { @class = "btn btn-warning" }) |
+                                    @*@Html.ActionLink("Details", "Details", new { Id = item.UserID }, new { @class = "btn btn-success" }) |*@
+                                    @* @Html.ActionLink("Delete", "Delete", new { Id = item.UserID }, new { @class = "btn btn-danger" })*@
+                                    <button class="btn btn-danger" onclick="return deleteUser('@item.UserID')" id="btnUDelete">Delete</button>
+
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+<script>
+
+    function deleteUser(id) {
+        if (confirm('Are you sure you want to delete this user - have you removed all roles for this user?')) {
+            var url = "/User/Delete";
+            $.post(url, { Id: id }, function (data) {
+                location.reload();
+                alert("Delete user successfully");
+            });
+            return true;
+        }
+        else {
+            return false;
+        }
+
+    }
+</script> 

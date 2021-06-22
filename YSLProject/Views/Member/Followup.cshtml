@@ -1,0 +1,131 @@
+﻿@model YSLProject.Models.RecertificationFollowUp
+@{
+    ViewData["Title"] = "Followup";
+}
+
+<h1>Member follow up</h1>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+
+
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Followup">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @*<div class="form-group">
+                    <label asp-for="MemberID" class="control-label"></label>
+                    <input asp-for="MemberID" class="form-control" />
+                    <span asp-validation-for="MemberID" class="text-danger"></span>
+                </div>*@
+            @Html.HiddenFor(model => model.MemberId)
+            <div class="form-group row">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.CurrentStatus, htmlAttributes: new { @class = "control-label " })
+                    @Html.EditorFor(model => model.CurrentStatus, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.CurrentStatus, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.Outcome, htmlAttributes: new { @class = "control-label " })
+                    @Html.EditorFor(model => model.Outcome, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Outcome, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.Notes, htmlAttributes: new { @class = "control-label " })
+                    @Html.EditorFor(model => model.Notes, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Notes, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-3">
+                    @Html.LabelFor(model => model.NextStepTask, htmlAttributes: new { @class = "control-label " })
+                    @Html.EditorFor(model => model.NextStepTask, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.NextStepTask, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-3">
+                    @Html.LabelFor(model => model.NextStepDueNotes, htmlAttributes: new { @class = "control-label " })
+                    @Html.EditorFor(model => model.NextStepDueNotes, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.NextStepDueNotes, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-3">
+                    @Html.LabelFor(model => model.Nextduedate, htmlAttributes: new { @class = "control-label " })
+                    @Html.EditorFor(model => model.Nextduedate, new { htmlAttributes = new { @class = "form-control", @type = "date" } })
+                    @Html.ValidationMessageFor(model => model.Nextduedate, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-3">
+                    @Html.LabelFor(model => model.NewStatus, htmlAttributes: new { @class = "control-label " })
+                    @Html.EditorFor(model => model.NewStatus, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.NewStatus, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group ">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+            <div class="form-group row" style="display:none;">
+                <div class="container">
+                    <div class="table-responsive datatable">
+                        <table id="example1" class="table table-bordered table-striped testing">
+                            <thead>
+                                <tr>
+
+                                    <th>
+                                        @Html.DisplayName("Current Status")
+                                    </th>
+                                    <th>
+                                        @Html.DisplayName("Out Come")
+                                    </th>
+                                    <th>
+                                        @Html.DisplayName("Notes Required")
+                                    </th>
+                                    <th>
+                                        @Html.DisplayName("Next Steps/Task")
+                                    </th>
+                                    <th>
+                                        @Html.DisplayName("Next Steps Due Date")
+                                    </th>
+                                    <th>
+                                        @Html.DisplayName("Next Status")
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="dvBody">
+                                @foreach (var item in Model.recertificLists)
+                                {
+                                    <tr>
+
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.CurrentStatus)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Outcome)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.NextStepDueNotes)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.NextStepTask)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.NextStepDueNotes)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.NewStatus)
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    </div>
+                </div>
+</form>
+    </div>
+</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    
+
+
+}

@@ -1,0 +1,59 @@
+﻿@model YSLProject.Models.MemberMasterModel
+
+@{
+    ViewData["Title"] = "AddMember";
+}
+
+<h3>Import Member PIT</h3>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<hr />
+<style>
+    #Professional {
+        margin-left: 54%;
+        height: 90%;
+    }
+
+    #ProfessionalDelete {
+        margin-left: 54%;
+        height: 90%;
+    }
+</style>
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="UploadAddMemberPIT" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @*<div class="form-group">
+                    <label asp-for="MemberID" class="control-label"></label>
+                    <input asp-for="MemberID" class="form-control" />
+                    <span asp-validation-for="MemberID" class="text-danger"></span>
+                </div>*@
+           
+        <div class="form-group row">
+            
+            <div class="col-md-4">
+                <label class="control-label ">Upload File</label>
+                <input type="file" name="postedFile" style="display: block;" required />
+            </div>
+            <div class="col-md-2">
+                <label class="control-label ">&nbsp;</label>
+                <input type="submit" value="Save" class="btn btn-primary sve" style="display: block;" />
+            </div>
+        </div>
+            <div class="form-group">
+                
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    @*<a asp-action="Index">Back to List</a>*@
+</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+
+}
+
+

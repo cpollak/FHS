@@ -1,0 +1,850 @@
+﻿@model YSLProject.Models.MemberMasterModel
+@{
+    ViewData["Title"] = "Index";
+}
+
+@*<h1 id="UserName">'@ViewBag.UserName'</h1>*@
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.24/datatables.min.css" />
+<link href="~/css/loders.css" rel="stylesheet" />
+<style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+    .nav.nav-tabs .nav-item .nav-link.active {
+        border-bottom-color: white;
+    }
+
+    .row::after {
+        content: "";
+        clear: both;
+        display: table;
+    }
+
+    [class*="col-"] {
+        float: left;
+        padding: 15px;
+    }
+
+    .col-1 {
+        width: 8.33%;
+    }
+
+    .col-2 {
+        width: 16.66%;
+    }
+
+    .col-3 {
+        width: 25%;
+    }
+
+    .col-4 {
+        width: 33.33%;
+    }
+
+    .col-5 {
+        width: 41.66%;
+    }
+
+    .col-6 {
+        width: 50%;
+    }
+
+    .col-7 {
+        width: 58.33%;
+    }
+
+    .col-8 {
+        width: 66.66%;
+    }
+
+    .col-9 {
+        width: 75%;
+    }
+
+    .col-10 {
+        width: 83.33%;
+    }
+
+    .col-11 {
+        width: 91.66%;
+    }
+
+    .col-12 {
+        width: 100%;
+    }
+
+    html {
+        font-family: "Lucida Sans", sans-serif;
+    }
+
+    .header {
+        /* background-color: #9933cc;
+        color: #ffffff;*/
+        padding: 15px;
+    }
+
+    .menu ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .menu li {
+        padding: 8px;
+        /* margin-bottom: 7px;
+        background-color: #33b5e5;
+        color: #ffffff;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);*/
+    }
+
+        .menu li:hover {
+            /*background-color: #0099cc;*/
+        }
+
+    .nav-tabs {
+        border-bottom: none;
+    }
+
+    .btn-warning {
+        padding: 3px 1rem;
+    }
+</style>
+<div class="desutj" style="display:none;">
+    <div class="loader"></div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <a href="/Member/Workfollow?memberId=@Model.MemberID">x</a>
+
+
+                @*<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>*@
+            </div>
+            <div class="modal-body" id="myModalBodyDivtask">
+
+            </div>
+            @*<div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>*@
+        </div>
+    </div>
+</div>
+
+<style>
+    .menu li {
+        padding: 2px 8px;
+    }
+</style>
+<div class="row">
+    <div class="col-12">
+        <button class="btn btn-info" onclick="goBack()">Go Back</button>
+    </div>
+
+    <div class="col-3 menu">
+        <ul>
+            <li>
+                @*<label>Member first and last name</label>*@
+                <label style="margin-bottom: 0px;">Name</label>
+                @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control", @placeholder = "Member first and last name", @readonly = "readonly" } })
+
+            </li>
+            <li>
+                <label style="margin-bottom: 0px;">Address</label>
+                @Html.TextAreaFor(model => model.Address, new { htmlAttributes = new { @class = "form-control" }, rows = "3", @readonly = "readonly", @style = "width: 100%;" })
+            </li>
+            <li>
+                <label style="margin-bottom: 0px;">Primary Phone</label>
+                @Html.EditorFor(model => model.PrimaryPhone, new { htmlAttributes = new { @class = "form-control" } })
+            </li>
+            <li>
+                <label style="margin-bottom: 0px;">Email</label>
+                @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
+            </li>
+            <li>
+                <label style="margin-bottom: 0px;">Language</label>
+                @Html.DropDownListFor(model => model.Language, (IEnumerable<SelectListItem>)ViewBag.LanguageList, htmlAttributes: new { @class = "form-control", @onchange = "UpdateMemberData()" })
+
+            </li>
+            <li>
+                <label style="margin-bottom: 0px;">Date Of Birth</label>
+                @Html.EditorFor(model => model.DOB, new { htmlAttributes = new { @class = "form-control", @placeholder = "", @readonly = "readonly" } })
+            </li>
+            <li>
+                <label style="margin-bottom: 0px;">County Code</label>
+                @Html.EditorFor(model => model.CountyCode, new { htmlAttributes = new { @class = "form-control", @placeholder = "", @readonly = "readonly" } })
+            </li>
+            <li>
+                <label style="margin-bottom: 0px;">Resident ID</label>
+                @Html.EditorFor(model => model.ResidentID, new { htmlAttributes = new { @class = "form-control", @placeholder = "", @readonly = "readonly" } })
+            </li>
+            <li>
+                <label style="margin-bottom: 0px;">Medicaid ID</label>
+                @Html.EditorFor(model => model.MedicaidID, new { htmlAttributes = new { @class = "form-control", @placeholder = "", @readonly = "readonly" } })
+            </li>
+            <li>
+                <label style="margin-bottom: 0px;">Enrollment Date</label>
+                @Html.EditorFor(model => model.EnrollmentDa, new { htmlAttributes = new { @class = "form-control", @placeholder = "", @readonly = "readonly" } })
+            </li>
+            <li>
+                <label style="margin-bottom: 0px;">Disenrolment Date</label>
+                @Html.EditorFor(model => model.DisenrolmentDa, new { htmlAttributes = new { @class = "form-control", @placeholder = "", @readonly = "readonly" } })
+            </li>
+            <li>
+                <label style="margin-bottom: 0px;">New Facility Enrollment Date</label>
+                @Html.EditorFor(model => model.NewEnrollmentDa, new { htmlAttributes = new { @class = "form-control", @placeholder = "", @readonly = "readonly" } })
+            </li>
+
+            <li>
+                <label style="margin-bottom: 0px;">Membership Status</label>
+                @Html.EditorFor(model => model.MembershipStatu, new { htmlAttributes = new { @class = "form-control", @placeholder = "", @readonly = "readonly" } })
+            </li>
+            @*<li>
+                    <input type="text" class="form-control" placeholder="Assignee" />
+                </li>
+                <li>
+                    <input type="text" class="form-control" placeholder="Assignment Date" />
+                </li>*@
+        </ul>
+    </div>
+
+
+    <div class="col-9">
+
+        <div class="content-body">
+            <section id="dom">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                                <div class="heading-elements">
+                                    <ul class="list-inline mb-0">
+                                        <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                        <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                                        <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                        <li><a data-action="close"><i class="ft-x"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="card-content collapse show">
+                                <div class="card-body card-dashboard dataTables_wrapper dt-bootstrap">
+                                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                        <li class="nav-item waves-effect waves-light">
+                                            <a class="nav-link active" id="Workflow-tab" data-toggle="tab" href="#Workflow" role="tab" aria-controls="Workflow" aria-selected="true">Workflow</a>
+                                        </li>
+
+                                        <li class="nav-item waves-effect waves-light">
+                                            <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Contacts</a>
+                                        </li>
+                                        <li class="nav-item waves-effect waves-light">
+                                            <a class="nav-link" id="contact-tab" data-toggle="tab" href="#spousal" role="tab" aria-controls="spousal" aria-selected="false">Spousal</a>
+                                        </li>
+                                        <li class="nav-item waves-effect waves-light">
+                                            <a class="nav-link" id="logs-tab" data-toggle="tab" href="#logs" role="tab" aria-controls="logs" aria-selected="false">Logs</a>
+                                        </li>
+                                        <li class="nav-item waves-effect waves-light">
+                                            <a class="nav-link" id="pit-tab" data-toggle="tab" href="#pit" role="tab" aria-controls="pit" aria-selected="false">PIT</a>
+                                        </li>
+                                    </ul>
+                                    <div class="tab-content" id="myTabContent" style="border: 1px solid #dee2e6;">
+
+
+                                        <div class="tab-pane fade active show" id="Workflow" role="tabpanel" aria-labelledby="Workflow-tab" style="padding-left:20px;padding-right:20px;padding-top:20px;padding-bottom:20px;">
+                                            <div class="form-group row" style="margin-bottom:0">
+                                                <div class="col-md-8" style="padding:0">
+                                                    @{
+                                                        if (Model.RecertMonth != "")
+                                                        {
+                                                            <div class="col-md-6">
+                                                                <label><span style="font-weight:bold">Recert Month :</span> @Model.RecertMonth</label>
+                                                            </div>
+                                                        }
+                                                        <div class="col-md-6">
+                                                            <span style="font-weight:bold">Temporary Recert Month :</span>
+                                                            @Html.DropDownListFor(model => model.TempRecertMonth, (IEnumerable<SelectListItem>)ViewBag.MonthList, htmlAttributes: new { @class = "form-control", @Id = "TempMonth", @onchange = "SaveTempMonth()" })
+                                                        </div>
+
+                                                    }
+
+                                                </div>
+                                                <div class="col-md-4" style="text-align:end;">
+
+                                                    @{
+                                                        if (Model.Recertification_Follow_UpModels.Count > 0)
+                                                        {
+                                                            <button onclick="AddFollowup(@Model.MemberID,'0')" title="Edit Details" class="btn btn-primary">Add Followup</button>
+                                                        }
+                                                    }
+                                                </div>
+                                            </div>
+                                            <div class="form-group row" style="margin-bottom:0">
+                                                @{
+
+                                                    if (Model.Recertification_Follow_UpModels.Count > 0)
+                                                    {
+                                                        <div class="col-md-4">
+                                                            <label><span style="font-weight:bold">Current Status :</span> @Model.Recertification_Follow_UpModels.FirstOrDefault().NewStatus</label>
+
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label><span style="font-weight:bold">Next Task :</span> @Model.Recertification_Follow_UpModels.FirstOrDefault().NextStepTask</label>
+
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label><span style="font-weight:bold">Due Date :</span> @Model.Recertification_Follow_UpModels.FirstOrDefault().Nextduedate.ToString("MM/dd/yyyy")</label>
+
+                                                        </div>
+                                                    }
+                                                }
+                                            </div>
+                                            <div class="form-group row" style="margin-bottom:0">
+                                                <div class="col-md-12">
+                                                    <span style="font-weight:bold">Comment :</span>
+
+                                                    @Html.TextAreaFor(model => model.Comment, new { htmlAttributes = new { @class = "form-control" }, rows = "2", @style = "width: 100%;" })
+                                                    <button onclick="SaveComment()" style="float:right" title="Comment" class="btn btn-primary">Save</button>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <div class="table-responsive">
+                                                    <div class="col-md-4">
+                                                        <label style="font-weight:bold">Facility</label>
+                                                        @Html.DropDownListFor(model => model.CurrentFacility, (IEnumerable<SelectListItem>)ViewBag.FacilityType, htmlAttributes: new { @class = "form-control", @onchange = "GetWorkflowList()" })
+
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label style="font-weight:bold">Current Facility</label><br/>
+                                                        @Html.DisplayFor(model => model.CurrentFacility)
+
+                                                    </div>
+                                                    <table id="exampleworkflow" class="table table-striped table-bordered dom-jQuery-events">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Current Status</th>
+                                                                <th>Out Come</th>
+                                                                <th>Notes</th>
+                                                                <th>Next StepTask</th>
+                                                                <th>New Status</th>
+                                                                <th>Created date</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="tfbodyworkflow">
+                                                        </tbody>
+                                                        @*<tbody>
+                @foreach (var item in Model.Recertification_Follow_UpModels)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CurrentStatus)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Outcome)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Notes)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.NextStepTask)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.NewStatus)
+                        </td>
+                        <td>
+                            @Convert.ToDateTime(item.CreatedDate).ToString("MM/dd/yyyy hh:mm tt")
+                        </td>
+                    </tr>
+                }
+            </tbody>*@
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab" style="padding-left:20px;padding-right:20px;padding-top:20px;padding-bottom:20px;">
+                                            <div class="form-group row" style="width: 950px;">
+                                                <div class="col-md-6">
+
+                                                </div>
+                                                <div class="col-md-6" style="text-align:end;">
+
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <div class="table-responsive">
+                                                    <table id="example2" class="table table-striped table-bordered dom-jQuery-events">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Name</th>
+                                                                <th>Email</th>
+                                                                <th>Phone No</th>
+                                                                <th>Address</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach (var item in Model.contactModels)
+                                                            {
+                                                                <tr>
+                                                                    <td>
+                                                                        @Html.DisplayFor(modelItem => item.Name)
+                                                                    </td>
+                                                                    <td>
+                                                                        @Html.DisplayFor(modelItem => item.Email)
+                                                                    </td>
+                                                                    <td>
+                                                                        @Html.DisplayFor(modelItem => item.Phone)
+                                                                    </td>
+                                                                    <td>
+                                                                        @Html.DisplayFor(modelItem => item.Address)
+                                                                    </td>
+
+                                                                </tr>
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="spousal" role="tabpanel" aria-labelledby="spousal-tab" style="padding-left:20px;padding-right:20px;padding-top:20px;padding-bottom:20px;">
+                                            <div class="form-group row" style="width: 950px;">
+                                                <div class="col-md-6">
+
+                                                </div>
+                                                <div class="col-md-6" style="text-align:end;">
+
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <div class="table-responsive">
+                                                    <table id="example2" class="table table-striped table-bordered dom-jQuery-events">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Name</th>
+                                                                <th>Case Name</th>
+                                                                <th>MA#</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach (var item in Model.SpousalModels)
+                                                            {
+                                                                <tr>
+                                                                    <td>
+                                                                        @Html.DisplayFor(modelItem => item.Name)
+                                                                    </td>
+                                                                    <td>
+                                                                        @Html.DisplayFor(modelItem => item.CaseName)
+                                                                    </td>
+                                                                    <td>
+                                                                        @Html.DisplayFor(modelItem => item.MA)
+                                                                    </td>
+
+
+                                                                </tr>
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="logs" role="tabpanel" aria-labelledby="logs-tab" style="padding-left:20px;padding-right:20px;padding-top:20px;padding-bottom:20px;">
+
+                                            <div class="form-group row">
+                                                <div class="col-md-4">
+                                                    <label style="font-weight:bold">Facility</label>
+                                                    @Html.DropDownList("Facility", (IEnumerable<SelectListItem>)ViewBag.FacilityType, htmlAttributes: new { @class = "form-control", @onchange = "GetLogsList()" })
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label style="font-weight:bold"> Current Facility</label><br/>
+                                                    @Html.DisplayFor(model => model.CurrentFacility)
+
+                                                </div>
+                                                
+                                                <div class="table-responsive">
+                                                    <table id="example3" class="table table-striped table-bordered dom-jQuery-events">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Action Name</th>
+                                                                <th>Date</th>
+
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="tfbody">
+                                                        </tbody>
+                                                        @*<tbody>
+                    @foreach (var item in Model.LogsModels)
+                    {
+                        <tr>
+
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ActionName)
+                            </td>
+                            <td>
+                                @Convert.ToDateTime(item.CreatedDate).ToString("M/dd/yyyy hh:mm tt")
+                            </td>
+
+                        </tr>
+                    }
+                </tbody>*@
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="pit" role="tabpanel" aria-labelledby="pit-tab" style="padding-left:20px;padding-right:20px;padding-top:20px;padding-bottom:20px;">
+                                            <div class="form-group row" style="width: 950px;">
+                                            </div>
+                                            <div class="form-group row">
+                                            </div>
+                                            @Html.HiddenFor(model => model.pITModel.ID)
+                                            @Html.HiddenFor(model => model.pITModel.MemberID)
+                                            <div class="form-group row" style="margin-bottom:0px;">
+                                                <div class="col-4">
+                                                    <ul>
+                                                        @Html.EditorFor(model => model.pITModel.PITName, new { htmlAttributes = new { @class = "form-control", @placeholder = "PIT", @id = "txtPIT" } })
+                                                    </ul>
+                                                    <ul>
+                                                        @Html.EditorFor(model => model.pITModel.PITStatus, new { htmlAttributes = new { @class = "form-control", @placeholder = "PIT Status", @id = "txtPITStatus" } })
+                                                    </ul>
+                                                    <ul>
+                                                        @Html.EditorFor(model => model.pITModel.PITEffective, new { htmlAttributes = new { @class = "form-control", @placeholder = "PIT Effective", @id = "txtPITEffective" } })
+                                                    </ul>
+                                                </div>
+                                                <div class="col-8">
+                                                    <ul>
+                                                        @Html.TextAreaFor(model => model.pITModel.PITNotes, new { htmlAttributes = new { @class = "form-control" }, rows = "6", @placeholder = "PIT Notes", @id = "txtPITNotes", @style = "width:100%" })
+                                                    </ul>
+
+                                                </div>
+
+                                            </div>
+
+                                            <div class="form-group row">
+                                                <div class="col-md-5" style="text-align:end;padding-top:0px;">
+                                                    <button type="button" onclick="SavePIT('@Model.pITModel.ID', '@Model.pITModel.MemberID')" style="width:50%;" class="btn btn-primary">Edit</button>
+                                                    @* <input type="submit" value="Save" class="btn btn-primary sve" />*@
+
+                                                </div>
+
+                                            </div>
+
+
+                                        </div>
+
+
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+
+        <div class="col-9" style="display:none;">
+            <table class="table" id="example" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayName("First Name")
+                        </th>
+                        <th>
+                            @Html.DisplayName("Last Name")
+                        </th>
+                        <th>
+                            @Html.DisplayName("Created Date")
+                        </th>
+                        <th>
+                            @Html.DisplayName("MedicaidID")
+                        </th>
+                        <th>
+                            @Html.DisplayName("ResidenceID")
+                        </th>
+                        <th>
+                            @Html.DisplayName("Membership Status")
+                        </th>
+                        <th>
+                            @Html.DisplayName("Language")
+                        </th>
+                        <th>
+                            @Html.DisplayName("Created by")
+                        </th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="tfbody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@section Scripts {
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");
+
+
+    }
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+
+    <script>
+
+
+        $(".desutj").css("display", "none");
+        $('#example').DataTable({
+            'paging': true,
+            'lengthChange': true,
+            'searching': true,
+            "order": [],
+            'info': true,
+            'autoWidth': true,
+            'columnDefs': [{
+                'targets': [4],
+                'orderable': false,
+            }]
+        })
+
+        $('#example1').DataTable({
+                'paging': true,
+                'lengthChange': true,
+                'searching': true,
+                "order": [],
+                'info': true,
+                'autoWidth': true,
+                'columnDefs': [{
+                    'targets': [5],
+                    'orderable': false,
+                }]
+            })
+
+        $('#example2').DataTable({
+            'paging': true,
+            'lengthChange': true,
+            'searching': true,
+            "order": [],
+            'info': true,
+            'autoWidth': true,
+            'columnDefs': [{
+                'targets': [],
+                'orderable': false,
+            }]
+        })
+
+
+        var NextStepTask = $("#NextStepTask").val();
+        var MemberID =  @Model.MemberID;
+        var Facility = $("#Facility").val();
+        GetLogsList();
+        
+
+        $('#example3').DataTable({
+            'paging': true,
+            'lengthChange': true,
+            'searching': true,
+            "order": [],
+            'info': true,
+            'autoWidth': true,
+            'columnDefs': [{
+                'targets': [],
+                'orderable': false,
+            }]
+        })
+
+        function populateDataTable(data) {
+            $("#example3").DataTable().clear();
+            $.each(data, function (index, value) {
+                debugger;
+                $('#example3').dataTable().fnAddData([
+                    (value.actionName == null ? "" : value.actionName),
+                    (value.createdDt == null ? "" : value.createdDt)
+                ]);
+            })
+        }
+
+        GetWorkflowList();
+
+
+        $('#exampleworkflow').DataTable({
+            'paging': true,
+            'lengthChange': true,
+            'searching': true,
+            "order": [],
+            'info': true,
+            'autoWidth': true,
+            'columnDefs': [{
+                'targets': [],
+                'orderable': false,
+            }]
+        })
+
+        function populateDataTableworkflow(data) {
+            $("#exampleworkflow").DataTable().clear();
+            $.each(data, function (index, value) {
+                debugger;
+                $('#exampleworkflow').dataTable().fnAddData([
+                    (value.currentStatus == null ? "" : value.currentStatus),
+                    (value.outcome == null ? "" : value.outcome),
+                    (value.notes == null ? "" : value.notes),
+                    (value.nextStepTask == null ? "" : value.nextStepTask),
+                    (value.newStatus == null ? "" : value.newStatus),
+                    (value.createdDt == null ? "" : value.createdDt)
+                ]);
+            })
+        }
+
+        $("#UserName").text("Welcome " + '@ViewBag.UserName');
+         var AddFollowup = function (memberid,id) {
+            var url = "/Member/FollowupS?Memberid=" + memberid +"&Id="+ id;
+            $("#myModalBodyDivtask").load(url, function () {
+                $("#exampleModalLabel").text("Followup");
+                $("#exampleModal").modal("show");
+            })
+        }
+
+
+        function SavePIT(id,memberid) {
+                var name = $("#txtPIT").val();
+
+            var status = $("#txtPITStatus").val();
+                var effective = $("#txtPITEffective").val();
+                var notes = $("#txtPITNotes").val();
+                $.ajax({
+                        url: '@Url.Action("SavePIT", "Member")',
+                        type: "POST",
+                        data: { "id": id, "memberid": memberid, "name": name, "status": status, "effective": effective, "notes": notes},
+                        success: function (data) {
+                        alert("Save PIT successfully ");
+                        },
+                        error: function (Result) {
+                        }
+                    });
+        }
+
+        function SaveTempMonth() {
+            var month = $("#TempMonth").val();
+            var id = @Model.MemberID;
+            $.ajax({
+                        url: '@Url.Action("SaveTempRecerMonth", "Member")',
+                        type: "POST",
+                        data: { "memberid": id, "month": month},
+                        success: function (data) {
+                        alert("Set Temprory recert month successfully");
+                        },
+                        error: function (Result) {
+                        }
+                    });
+        }
+
+        $("#Email").focusout(function () {
+            UpdateMemberData();
+        });
+        $("#PrimaryPhone").blur(function () {
+            UpdateMemberData();
+        });
+
+        function SaveComment() {
+            var Comment = $("#Comment").val();
+            var id = @Model.MemberID;
+
+             $.ajax({
+                        url: '@Url.Action("SaveComment", "Member")',
+                        type: "POST",
+                 data: { "memberid": id, "Comment": Comment},
+                        success: function (data) {
+                        },
+                        error: function (Result) {
+                        }
+                    });
+        }
+
+        function UpdateMemberData() {
+            var Email = $("#Email").val();
+            var PrimaryPhone = $("#PrimaryPhone").val();
+            var Language = $("#Language").val();
+            var id = @Model.MemberID;
+            $.ajax({
+                        url: '@Url.Action("UpdateMemberData", "Member")',
+                        type: "POST",
+                data: { "memberid": id, "Email": Email, "PrimaryPhone": PrimaryPhone, "Language": Language},
+                        success: function (data) {
+                        },
+                        error: function (Result) {
+                        }
+                    });
+        }
+
+        function GetLogsList() {
+             var MemberID =  @Model.MemberID;
+        var Facility = $("#Facility").val();
+
+        $.ajax({
+            url: '@Url.Action("LogFilter", "Member")',
+            type: "POST",
+            data: {
+                "MemberID": MemberID,
+                "Facility": Facility
+            },
+            success: function (data) {
+                debugger;
+                $("#tfbody").html("");
+                var thtml = "";
+                if (data == "notDone") {
+                    var table = $('#example3').DataTable();
+                    table.clear().draw();
+                }
+                else {
+                    myJsonData = data;
+                    populateDataTable(myJsonData);
+                }
+            },
+            error: function (Result) {
+            }
+        });
+        }
+
+        function GetWorkflowList() {
+        var MemberID =  @Model.MemberID;
+            var Facility = $("#CurrentFacility").val();
+
+        $.ajax({
+            url: '@Url.Action("WorkflowFilter", "Member")',
+            type: "POST",
+            data: {
+                "MemberID": MemberID,
+                "Facility": Facility
+            },
+            success: function (data) {
+                debugger;
+                $("#tfbodyworkflow").html("");
+                var thtml = "";
+                if (data == "notDone") {
+                    var table = $('#exampleworkflow').DataTable();
+                    table.clear().draw();
+                }
+                else {
+                    myJsonData = data;
+                    populateDataTableworkflow(myJsonData);
+                }
+            },
+            error: function (Result) {
+            }
+        });
+        }
+
+
+        function goBack() {
+            //window.history.back()
+            window.location.href="/Dashboard/Index?b"
+        }
+    </script>
+}
+
