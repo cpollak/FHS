@@ -167,10 +167,7 @@ namespace YSLProject.Controllers
             }
         }
 
-        public void stefun()
-        {
-
-        }
+      
           
     }
 }
