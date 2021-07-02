@@ -263,7 +263,7 @@ namespace YSLProject.Controllers
 
                 //var MemberData = _context.MemberMaster.AsNoTracking().Where(s=>s.MemberID== obj.MemberID).FirstOrDefault();
                 MemberMaster obj1 = new MemberMaster();
-                obj1.MemberID = obj.MemberID;
+                obj1.MemberID = obj.MemberID.Value;
                 obj1.FirstName = obj.FirstName;
                 obj1.LastName = obj.LastName;
                 obj1.Address = obj.Address;
@@ -287,7 +287,7 @@ namespace YSLProject.Controllers
                 obj1.CreatedBy = obj.CreatedBy;
 
                 _context.MemberMaster.Update(obj1);
-                int MemberId = obj.MemberID;
+                int MemberId = obj.MemberID.Value;
                 await _context.SaveChangesAsync();
 
                 Logs objlog = new Logs();
@@ -1598,7 +1598,7 @@ namespace YSLProject.Controllers
 
             foreach (var dt in datas.ToList())
             {
-                var dataf= _context.MemberMaster.Where(a => a.MedicaidID == dt.MedicaidID).OrderByDescending(a=>a.MemberID).ToList();
+                var dataf = _context.MemberMaster.Where(a => a.MedicaidID == dt.MedicaidID).OrderByDescending(a => a.MemberID).ToList();
                 obj.CurrentFacility = dataf.FirstOrDefault().Facility;
 
 
@@ -1653,16 +1653,16 @@ namespace YSLProject.Controllers
             }).ToList();
 
 
-            obj.contactModels = _context.Contacts.Where(a => a.MemberID == memberId).ToList().Select(s => new ContactModel
-            {
-                MemberID = s.MemberID,
-                ContactID = s.ContactID,
-                RelationShip = s.RelationShip,
-                Address = s.Address,
-                Name = s.Name,
-                Email = s.Email,
-                Phone = s.Phone
-            }).ToList();
+            //obj.contactModels = _context.Contacts.Where(a => a.MemberID == memberId).ToList().Select(s => new ContactModel
+            //{
+            //    MemberID = s.MemberID,
+            //    ContactID = s.ContactID,
+            //    RelationShip = s.RelationShip,
+            //    Address = s.Address,
+            //    Name = s.Name,
+            //    Email = s.Email,
+            //    Phone = s.Phone
+            //}).ToList();
             obj.SpousalModels = _context.Spousal.Where(a => a.MemberID == memberId).ToList().Select(s => new SpousalModel
             {
                 MemberID = s.MemberID,
@@ -1687,6 +1687,27 @@ namespace YSLProject.Controllers
             //    FileName = s.FileName
             //}).ToList();
 
+            obj.GeneralNotesModel = (from l in _context.GeneralNotes
+                                     join m in _context.UserMaster
+                                     on l.CreatedBy equals m.UserID
+                                     where l.MemberId == memberId
+                                     select new
+                                     {
+                                         l.ID,
+                                         l.MemberId,
+                                         l.Type,
+                                         l.Notes,
+                                         l.CreatedDate,
+                                         m.UserName
+                                     }).OrderByDescending(a => a.ID).ToList()
+                        .Select(a => new GeneralNotesModel
+                        {
+                            MemberId = a.MemberId,
+                            Type = a.Type,
+                            Notes = a.Notes,
+                            CreatedDat = a.CreatedDate.ToString("MM/dd/yyyy hh:mm tt"),
+                            CreatedBys = a.UserName,
+                        }).ToList();
 
             PITModel pmodel = new PITModel();
             pmodel.MemberID = memberId;
@@ -1843,6 +1864,29 @@ namespace YSLProject.Controllers
                             NewStatus = Convert.ToInt32(s.NewStatus) > 0 ? Enum.GetName(typeof(FollowupStatus), Convert.ToInt32(s.NewStatus)).Replace("_", " ") : "",
                             CreatedDt = s.CreatedDate.ToString("MM/dd/yyyy"),
                         });
+
+            return Json(data);
+        }
+
+
+        [HttpPost]
+        public IActionResult ContactList(int? MemberID)
+        {
+            if (HttpContext.Session.GetString("UserName") == null)
+            {
+                return RedirectToAction("Login", "Login");
+            }
+
+            var data = _context.Contacts.Where(a => a.MemberID == MemberID).OrderByDescending(a => a.ContactID).ToList().Select(s => new ContactModel
+            {
+                MemberID = s.MemberID,
+                ContactID = s.ContactID,
+                RelationShip = s.RelationShip,
+                Address = s.Address,
+                Name = s.Name,
+                Email = s.Email,
+                Phone = s.Phone
+            }).ToList();
 
             return Json(data);
         }
@@ -2055,6 +2099,35 @@ namespace YSLProject.Controllers
             //return View(obj);
         }
 
+        public IActionResult GeneralNotes(int Memberid)
+        {
+            GeneralNotesModel model = new GeneralNotesModel();
+            model.MemberId = Memberid;
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GeneralNotes(GeneralNotesModel obj)
+        {
+
+            GeneralNotes obj1 = new GeneralNotes();
+            obj1.CreatedDate = DateTime.Now;
+            obj1.CreatedBy = Convert.ToInt32(HttpContext.Session.GetString("UserID"));
+            obj1.MemberId = obj.MemberId;
+            obj1.Type = obj.Type;
+            obj1.Notes = obj.Notes;
+
+            _context.GeneralNotes.Add(obj1);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Workfollow", "Member", new
+            {
+                memberId = obj.MemberId,
+            });
+
+        }
+
+
         [HttpPost]
         public async Task<IActionResult> SavePIT(int? id, int? memberid, string name, string status, string effective, string notes)
         {
@@ -2083,6 +2156,31 @@ namespace YSLProject.Controllers
             return RedirectToAction("Workfollow", "Member", new
             {
                 memberId = pmodel.MemberID,
+            });
+
+            //return View(obj);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> SaveContacts(int memberid, string name, string phone, string email, string address)
+        {
+            Contacts model = new Contacts();
+            model.MemberID = memberid;
+            model.Name = name;
+            model.Phone = phone;
+            model.Email = email;
+            model.Address = address;
+
+            if (name != "")
+            {
+                _context.Contacts.Add(model);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("Workfollow", "Member", new
+            {
+                memberId = model.MemberID,
             });
 
             //return View(obj);

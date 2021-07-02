@@ -1,11 +1,13 @@
 ﻿@model YSLProject.Models.MemberMasterModel
 @{
     ViewData["Title"] = "Index";
-}
 
-@*<h1 id="UserName">'@ViewBag.UserName'</h1>*@
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.24/datatables.min.css" />
-<link href="~/css/loders.css" rel="stylesheet" />
+
+    @*<h1 id="UserName">'@ViewBag.UserName'</h1>*@
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.24/datatables.min.css" />
+    <link href="~/css/loders.css" rel="stylesheet" />
+
+}
 <style>
 
     * {
@@ -90,7 +92,7 @@
         margin: 0;
         padding: 0;
     }
-
+     
     .menu li {
         padding: 8px;
         /* margin-bottom: 7px;
@@ -139,6 +141,23 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="exampleModalNotes" tabindex="-1" role="dialog" aria-labelledby="exampleModalNotesLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalNotesLabel">Modal title</h5>
+                <a href="/Member/Workfollow?memberId=@Model.MemberID">x</a>
+
+            </div>
+            <div class="modal-body" id="myModalBodyDivtaskNotes">
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
 
 <style>
     .menu li {
@@ -285,6 +304,8 @@
                                                             <button onclick="AddFollowup(@Model.MemberID,'0')" title="Edit Details" class="btn btn-primary">Add Followup</button>
                                                         }
                                                     }
+                                                    <button onclick="AddGeneralNotes(@Model.MemberID)" title="Edit Details" class="btn btn-primary">General Note</button>
+
                                                 </div>
                                             </div>
                                             <div class="form-group row" style="margin-bottom:0">
@@ -323,7 +344,7 @@
 
                                                     </div>
                                                     <div class="col-md-4">
-                                                        <label style="font-weight:bold">Current Facility</label><br/>
+                                                        <label style="font-weight:bold">Current Facility</label><br />
                                                         @Html.DisplayFor(model => model.CurrentFacility)
 
                                                     </div>
@@ -341,46 +362,97 @@
                                                         <tbody id="tfbodyworkflow">
                                                         </tbody>
                                                         @*<tbody>
-                @foreach (var item in Model.Recertification_Follow_UpModels)
-                {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.CurrentStatus)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Outcome)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Notes)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.NextStepTask)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.NewStatus)
-                        </td>
-                        <td>
-                            @Convert.ToDateTime(item.CreatedDate).ToString("MM/dd/yyyy hh:mm tt")
-                        </td>
-                    </tr>
-                }
-            </tbody>*@
+                                                                @foreach (var item in Model.Recertification_Follow_UpModels)
+                                                                {
+                                                                    <tr>
+                                                                        <td>
+                                                                            @Html.DisplayFor(modelItem => item.CurrentStatus)
+                                                                        </td>
+                                                                        <td>
+                                                                            @Html.DisplayFor(modelItem => item.Outcome)
+                                                                        </td>
+                                                                        <td>
+                                                                            @Html.DisplayFor(modelItem => item.Notes)
+                                                                        </td>
+                                                                        <td>
+                                                                            @Html.DisplayFor(modelItem => item.NextStepTask)
+                                                                        </td>
+                                                                        <td>
+                                                                            @Html.DisplayFor(modelItem => item.NewStatus)
+                                                                        </td>
+                                                                        <td>
+                                                                            @Convert.ToDateTime(item.CreatedDate).ToString("MM/dd/yyyy hh:mm tt")
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                            </tbody>*@
                                                     </table>
+
+                                                    <hr />
+                                                    <table id="exampleNotes" class="table table-striped table-bordered dom-jQuery-events">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Type</th>
+                                                                <th>Notes</th>
+                                                                <th>Date</th>
+                                                                <th>Created By</th>
+                                                            </tr>
+                                                        </thead>
+
+                                                        <tbody>
+                                                            @foreach (var item in Model.GeneralNotesModel)
+                                                            {
+                                                                <tr>
+                                                                    <td>
+                                                                        @Html.DisplayFor(modelItem => item.Type)
+                                                                    </td>
+                                                                    <td>
+                                                                        @Html.DisplayFor(modelItem => item.Notes)
+                                                                    </td>
+                                                                    <td>
+                                                                        @Html.DisplayFor(modelItem => item.CreatedDat)
+                                                                    </td>
+                                                                    <td>
+                                                                        @Html.DisplayFor(modelItem => item.CreatedBys)
+                                                                    </td>
+                                                                    
+                                                                </tr>
+                                                            }
+                                                        </tbody>
+                                                    </table>
+
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab" style="padding-left:20px;padding-right:20px;padding-top:20px;padding-bottom:20px;">
-                                            <div class="form-group row" style="width: 950px;">
-                                                <div class="col-md-6">
 
+                                            <div class="form-group row">
+                                                <div class="col-md-2" style="padding: 2px;">
+                                                    <label class="control-label">Name</label>
+                                                    <input type="text" class="form-control" id="contactName" />
                                                 </div>
-                                                <div class="col-md-6" style="text-align:end;">
+                                                <div class="col-md-2" style="padding: 2px;">
+                                                    <label class="control-label">Phone</label>
+                                                    <input type="text" class="form-control" id="contactPhone" />
+                                                </div>
+                                                <div class="col-md-2" style="padding: 2px;">
+                                                    <label class="control-label">Email</label>
+                                                    <input type="text" class="form-control" id="contactEmail" />
+                                                </div>
+                                                <div class="col-md-4" style="padding: 2px;">
+                                                    <label class="control-label">Address</label>
+                                                    <input type="text" class="form-control" id="contactAddress" />
+                                                </div>
+                                                <div class="col-md-2" style="padding: 29px 2px;">
+                                                    <button onclick="SaveContacts(@Model.MemberID)" title="Edit Details" class="btn btn-primary">Add Contacts</button>
+
 
                                                 </div>
                                             </div>
                                             <div class="form-group row">
                                                 <div class="table-responsive">
-                                                    <table id="example2" class="table table-striped table-bordered dom-jQuery-events">
+
+                                                    <table id="exampleContacts" class="table table-striped table-bordered dom-jQuery-events">
                                                         <thead>
                                                             <tr>
                                                                 <th>Name</th>
@@ -389,26 +461,27 @@
                                                                 <th>Address</th>
                                                             </tr>
                                                         </thead>
-                                                        <tbody>
-                                                            @foreach (var item in Model.contactModels)
-                                                            {
-                                                                <tr>
-                                                                    <td>
-                                                                        @Html.DisplayFor(modelItem => item.Name)
-                                                                    </td>
-                                                                    <td>
-                                                                        @Html.DisplayFor(modelItem => item.Email)
-                                                                    </td>
-                                                                    <td>
-                                                                        @Html.DisplayFor(modelItem => item.Phone)
-                                                                    </td>
-                                                                    <td>
-                                                                        @Html.DisplayFor(modelItem => item.Address)
-                                                                    </td>
+                                                        <tbody id="tcontactbody"></tbody>
+                                                        @*<tbody>
+                                                                @foreach (var item in Model.contactModels)
+                                                                {
+                                                                    <tr>
+                                                                        <td>
+                                                                            @Html.DisplayFor(modelItem => item.Name)
+                                                                        </td>
+                                                                        <td>
+                                                                            @Html.DisplayFor(modelItem => item.Email)
+                                                                        </td>
+                                                                        <td>
+                                                                            @Html.DisplayFor(modelItem => item.Phone)
+                                                                        </td>
+                                                                        <td>
+                                                                            @Html.DisplayFor(modelItem => item.Address)
+                                                                        </td>
 
-                                                                </tr>
-                                                            }
-                                                        </tbody>
+                                                                    </tr>
+                                                                }
+                                                            </tbody>*@
                                                     </table>
                                                 </div>
                                             </div>
@@ -462,11 +535,11 @@
                                                     @Html.DropDownList("Facility", (IEnumerable<SelectListItem>)ViewBag.FacilityType, htmlAttributes: new { @class = "form-control", @onchange = "GetLogsList()" })
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <label style="font-weight:bold"> Current Facility</label><br/>
+                                                    <label style="font-weight:bold"> Current Facility</label><br />
                                                     @Html.DisplayFor(model => model.CurrentFacility)
 
                                                 </div>
-                                                
+
                                                 <div class="table-responsive">
                                                     <table id="example3" class="table table-striped table-bordered dom-jQuery-events">
                                                         <thead>
@@ -479,20 +552,20 @@
                                                         <tbody id="tfbody">
                                                         </tbody>
                                                         @*<tbody>
-                    @foreach (var item in Model.LogsModels)
-                    {
-                        <tr>
+                                                                @foreach (var item in Model.LogsModels)
+                                                                {
+                                                                    <tr>
 
-                            <td>
-                                @Html.DisplayFor(modelItem => item.ActionName)
-                            </td>
-                            <td>
-                                @Convert.ToDateTime(item.CreatedDate).ToString("M/dd/yyyy hh:mm tt")
-                            </td>
+                                                                        <td>
+                                                                            @Html.DisplayFor(modelItem => item.ActionName)
+                                                                        </td>
+                                                                        <td>
+                                                                            @Convert.ToDateTime(item.CreatedDate).ToString("M/dd/yyyy hh:mm tt")
+                                                                        </td>
 
-                        </tr>
-                    }
-                </tbody>*@
+                                                                    </tr>
+                                                                }
+                                                            </tbody>*@
                                                     </table>
                                                 </div>
                                             </div>
@@ -644,8 +717,6 @@
         var MemberID =  @Model.MemberID;
         var Facility = $("#Facility").val();
         GetLogsList();
-        
-
         $('#example3').DataTable({
             'paging': true,
             'lengthChange': true,
@@ -658,7 +729,6 @@
                 'orderable': false,
             }]
         })
-
         function populateDataTable(data) {
             $("#example3").DataTable().clear();
             $.each(data, function (index, value) {
@@ -670,9 +740,8 @@
             })
         }
 
+
         GetWorkflowList();
-
-
         $('#exampleworkflow').DataTable({
             'paging': true,
             'lengthChange': true,
@@ -685,7 +754,6 @@
                 'orderable': false,
             }]
         })
-
         function populateDataTableworkflow(data) {
             $("#exampleworkflow").DataTable().clear();
             $.each(data, function (index, value) {
@@ -701,12 +769,46 @@
             })
         }
 
+        GetContactsList();
+        $('#exampleContacts').DataTable({
+            'paging': true,
+            'lengthChange': true,
+            'searching': true,
+            "order": [],
+            'info': true,
+            'autoWidth': true,
+            'columnDefs': [{
+                'targets': [],
+                'orderable': false,
+            }]
+        })
+        function populateDataTablecontacts(data) {
+            $("#exampleContacts").DataTable().clear();
+            $.each(data, function (index, value) {
+                $('#exampleContacts').dataTable().fnAddData([
+                    (value.name == null ? "" : value.name),
+                    (value.email == null ? "" : value.email),
+                    (value.phone == null ? "" : value.phone),
+                    (value.address == null ? "" : value.address),
+                ]);
+            })
+        }
+
+
         $("#UserName").text("Welcome " + '@ViewBag.UserName');
          var AddFollowup = function (memberid,id) {
             var url = "/Member/FollowupS?Memberid=" + memberid +"&Id="+ id;
             $("#myModalBodyDivtask").load(url, function () {
                 $("#exampleModalLabel").text("Followup");
                 $("#exampleModal").modal("show");
+            })
+        }
+
+        var AddGeneralNotes = function (memberid) {
+            var url = "/Member/GeneralNotes?Memberid=" + memberid;
+            $("#myModalBodyDivtaskNotes").load(url, function () {
+                $("#exampleModalNotesLabel").text("General Notes");
+                $("#exampleModalNotes").modal("show");
             })
         }
 
@@ -729,6 +831,31 @@
                     });
         }
 
+
+        function SaveContacts(memberid) {
+            $(".desutj").css("display", "inline");
+            var name = $("#contactName").val();
+            var phone = $("#contactPhone").val();
+            var email = $("#contactEmail").val();
+            var address = $("#contactAddress").val();
+            if (name != "") {
+                $.ajax({
+                    url: '@Url.Action("SaveContacts", "Member")',
+                    type: "POST",
+                    data: { "memberid": memberid, "name": name, "phone": phone, "email": email, "address": address },
+                    success: function (data) {
+                        GetContactsList();
+                        $("#contactName").val("");
+                        $("#contactPhone").val("");
+                        $("#contactEmail").val("");
+                        $("#contactAddress").val("");
+                        $(".desutj").css("display", "none");
+                    },
+                    error: function (Result) {
+                    }
+                });
+            }
+        }
         function SaveTempMonth() {
             var month = $("#TempMonth").val();
             var id = @Model.MemberID;
@@ -840,9 +967,33 @@
         });
         }
 
+        function GetContactsList() {
+        var MemberID =  @Model.MemberID;
+        $.ajax({
+            url: '@Url.Action("ContactList", "Member")',
+            type: "POST",
+            data: {
+                "MemberID": MemberID,
+            },
+            success: function (data) {
+                debugger;
+                $("#tcontactbody").html("");
+                var thtml = "";
+                if (data == "notDone") {
+                    var table = $('#exampleContacts').DataTable();
+                    table.clear().draw();
+                }
+                else {
+                    myJsonData = data;
+                    populateDataTablecontacts(myJsonData);
+                }
+            },
+            error: function (Result) {
+            }
+        })
+        }
 
         function goBack() {
-            //window.history.back()
             window.location.href="/Dashboard/Index?b"
         }
     </script>

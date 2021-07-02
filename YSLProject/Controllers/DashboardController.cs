@@ -90,7 +90,7 @@ namespace YSLProject.Controllers
         }
 
         [HttpPost]
-        public IActionResult MemberFilter(string FromDate, string ToDate, string SearchbyName, string MedicaidID, string ResidenceID, string UserName, string Language, string MembershipStatus, string RecertMonth, string Followuptimes, string Facility, string NextStepTask)
+        public IActionResult MemberFilter(string FromDate, string ToDate, string SearchbyName, string MedicaidID, string ResidenceID, string UserName, string Language, string MembershipStatus, string RecertMonth, string Followuptimes, string Facility, string NextStepTask, string Phone, string followupS, string followupE)
         {
             if (HttpContext.Session.GetString("UserName") == null)
             {
@@ -102,6 +102,12 @@ namespace YSLProject.Controllers
                 userid = _context.UserMaster.Where(a => a.UserName.Trim() == UserName.Trim()).Count() > 0 ? _context.UserMaster.Where(a => a.UserName.Trim() == UserName.Trim()).FirstOrDefault().UserID : 0;
             }
             var FollowupData = _context.Recertification_Follow_Up.Where(s => s.PeriodOfTheDay == Followuptimes).ToList();
+            var FollowupDatefilter = new List<Recertification_Follow_Up>();
+            if (followupS != null && followupE != null)
+            {
+                FollowupDatefilter = _context.Recertification_Follow_Up.Where(s => s.CreatedDate >= Convert.ToDateTime(followupS) && s.CreatedDate <= Convert.ToDateTime(followupE)).ToList();
+
+            }
             var languagelist = _context.LanguageMaster.ToList();
             var NestStepTaskList = _context.Recertification_Follow_Up.Where(s => s.NewStatus == NextStepTask).ToList();
 
@@ -117,8 +123,9 @@ namespace YSLProject.Controllers
              a.CreatedBy == (UserName == null ? a.CreatedBy : userid) &&
              a.Language == (Language == null ? a.Language : Language) &&
              a.RecertMonth == (RecertMonth == null ? a.RecertMonth : RecertMonth) &&
+             a.PrimaryPhone == (Phone == null ? a.PrimaryPhone : Phone) &&
              a.MembershipStatus == (MembershipStatus == null ? a.MembershipStatus : Convert.ToInt32(MembershipStatus))
-            ).OrderByDescending(s => s.CreatedDate).Take(100).
+            ).OrderByDescending(s => s.CreatedDate).
             Select(s => new
             {
                 s.MemberID,
@@ -131,7 +138,7 @@ namespace YSLProject.Controllers
                 s.MembershipStatus,
                 s.Language,
                 s.RecertMonth,
-                s.CreatedBy
+                s.CreatedBy,
             }).ToList()
             .Select(a => new MemberMasterModel
             {
@@ -149,14 +156,22 @@ namespace YSLProject.Controllers
                 FollowupCount = FollowupData.Count() > 0 ? FollowupData.Where(n => n.MemberId == a.MemberID).Count() > 0 ? Followuptimes : null : null,
                 NextStepTask = NestStepTaskList.Count() > 0 ? NestStepTaskList.Where(n => n.MemberId == a.MemberID).Count() > 0 ? NestStepTaskList.Where(n => n.MemberId == a.MemberID).LastOrDefault().NewStatus : null : null
             });
+            var FltData = FollowupDatefilter.Select(s => s.MemberId).ToList();
             //if (FollowupData.Count() > 0)
             data = data.Where(s => s.FollowupCount == Followuptimes).ToList();
             data = data.Where(s => s.NextStepTask == NextStepTask).ToList();
-            
+            if (FltData.Count > 0)
+            {   
+
+                data = data.Where(s => FltData.Contains(s.MemberID.Value)).ToList();
+            }
+
+            if(data.Count() > 100) { data= data.Take(100); }
+
             return Json(data);
         }
 
-       
+
         public static class MyServer
         {
             public static string MapPath(string path)
@@ -167,7 +182,5 @@ namespace YSLProject.Controllers
             }
         }
 
-      
-          
     }
 }

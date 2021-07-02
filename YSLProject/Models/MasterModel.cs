@@ -9,7 +9,7 @@ namespace YSLProject.Models
    
     public class MemberMasterModel
     {
-        public int MemberID { get; set; }
+        public int? MemberID { get; set; }
 
         [Required(ErrorMessage = "First Name is required")]
         [Display(Name = "First Name")]
@@ -109,6 +109,7 @@ namespace YSLProject.Models
         public string MembershipStatu { get; set; }
         public string RecertMonth { get; set; }
         public string FollowupCount { get; set; }
+        public string Followupdaterange { get; set; }
 
         public string ReportsType { get; set; }
 
@@ -127,6 +128,7 @@ namespace YSLProject.Models
 
         public PITModel pITModel { get; set; }
         public List<PITUploadsModel> PITUploadsModel { get; set; }
+        public List<GeneralNotesModel> GeneralNotesModel { get; set; }
     }
 
     public class ContactModel
@@ -211,6 +213,25 @@ namespace YSLProject.Models
         public string PITEffective { get; set; }
         public string PITNotes { get; set; }
 
+    }
+    public class GeneralNotesModel
+    {
+        public int? ID { get; set; }
+
+        public int? MemberId { get; set; }
+
+       
+        [Display(Name = "Type")]
+        public string Type { get; set; }
+
+        [Display(Name = "Notes")]
+        public string Notes { get; set; }
+
+        public DateTime? CreatedDate { get; set; }
+        public string CreatedDat { get; set; }
+
+        public int? CreatedBy { get; set; }
+        public string CreatedBys { get; set; }
     }
 
     public class PITUploadsModel

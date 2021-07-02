@@ -25,5 +25,6 @@ namespace YSLProject.Models
         public DbSet<PermissionMaster> PermissionMaster { get; set; }
         public DbSet<LanguageMaster> LanguageMaster { get; set; }
         public DbSet<Recertification_Follow_Up> Recertification_Follow_Up { get; set; }
+        public DbSet<GeneralNotes> GeneralNotes { get; set; }
     }
 }
