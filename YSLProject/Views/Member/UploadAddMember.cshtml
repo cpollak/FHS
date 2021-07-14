@@ -7,6 +7,7 @@
 <h3>Import Member</h3>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href="~/css/loders.css" rel="stylesheet" />
 @*<h4>MemberMasterModel</h4>*@
 <hr />
 <style>
@@ -20,6 +21,9 @@
         height: 90%;
     }
 </style>
+<div class="desutj">
+    <div class="loader"></div>
+</div>
 <div class="row">
     <div class="col-md-12">
         <form asp-action="UploadAddMember" enctype="multipart/form-data">
@@ -70,13 +74,13 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
 <script>
-
-    //$(".sve").click(function () {
-    //    debugger;
-    //    if ($("form").valid() == false) {
-    //        return false;
-    //    }
-    //});
+    $(".desutj").css("display", "none");
+    $(".sve").click(function () {
+        $(".desutj").css("display", "block");
+        //if ($("form").valid() == false) {
+        //    return false;
+        //}
+    });
 
     //$(function () {
     //    $(".Fromdatepicker").datepicker({

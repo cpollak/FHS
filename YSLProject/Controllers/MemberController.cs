@@ -44,8 +44,13 @@ namespace YSLProject.Controllers
         }
         public IActionResult Index()
         {
+            
             // var x = DateTime.ParseExact("DEC", "MMM", CultureInfo.CurrentCulture).Month;
-
+            if (HttpContext.Session.GetString("successmessage") != null)
+            {
+                ViewBag.successmessage = HttpContext.Session.GetString("successmessage").ToString();
+                HttpContext.Session.Remove("successmessage");
+            }
             var data = _context.MemberMaster.OrderByDescending(a => a.MemberID).ToList();
             return View(data);
         }
@@ -488,7 +493,7 @@ namespace YSLProject.Controllers
                     SaveDischarge(dt, objM);
 
                 }
-
+                HttpContext.Session.SetString("successmessage", "Record saved successfully");
                 return RedirectToAction("Index", "Member");
 
             }
@@ -999,7 +1004,8 @@ namespace YSLProject.Controllers
                     if (Date != null)
                     {
                         dtnew = Convert.ToDateTime(Date);
-                        dtnew = new DateTime(dtnew.Year, dtnew.Month + 1, 1);
+                        dtnew = dtnew.AddMonths(1);
+                        //dtnew = new DateTime(dtnew.Year, dtnew.Month + 1, 1);
                     }
                     int mID = obj1.MemberID;
                     obj1.Status = objM.MemberStatus;

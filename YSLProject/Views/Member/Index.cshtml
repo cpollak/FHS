@@ -50,29 +50,29 @@
                     </thead>
                     <tbody>
                         @foreach (var item in Model)
-        {
-                        <tr>
+                        {
+                            <tr>
 
-                            <td>
-                                @Html.DisplayFor(modelItem => item.FirstName)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.LastName)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Email)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.PrimaryPhone)
-                            </td>
-                            <td>
-                                @*  @Html.ActionLink("Followup", "Followup", "Member", new { Id = item.MemberID }, new { @class = "btn btn-primary" }) |*@
-                                @Html.ActionLink("Edit", "EditMember", "Member", new { Id = item.MemberID }, new { @class = "btn btn-warning" }) |
-                                @*@Html.ActionLink("Details", "Details", new { Id = item.UserID }, new { @class = "btn btn-success" }) |*@
-                                @Html.ActionLink("Delete", "DeleteMember", "Member", new { Id = item.MemberID }, new { @class = "btn btn-danger" })
-                            </td>
-                        </tr>
-        }
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.FirstName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.LastName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Email)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.PrimaryPhone)
+                                </td>
+                                <td>
+                                    @*  @Html.ActionLink("Followup", "Followup", "Member", new { Id = item.MemberID }, new { @class = "btn btn-primary" }) |*@
+                                    @Html.ActionLink("Edit", "EditMember", "Member", new { Id = item.MemberID }, new { @class = "btn btn-warning" }) |
+                                    @*@Html.ActionLink("Details", "Details", new { Id = item.UserID }, new { @class = "btn btn-success" }) |*@
+                                    @Html.ActionLink("Delete", "DeleteMember", "Member", new { Id = item.MemberID }, new { @class = "btn btn-danger" })
+                                </td>
+                            </tr>
+                        }
                     </tbody>
                 </table>
             </div>
@@ -80,15 +80,23 @@
     </div>
 </div>
 
-                
 
 
 
-                <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-                <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
 
 
-                <script>
+<script>
+
+                    $(document).ready(function () {
+                        if ('@ViewBag.successmessage' != null) {
+                            alert('@ViewBag.successmessage');
+                        }
+                    })
+
+
                     $('#example').DataTable({
                         'paging': true,
                         'lengthChange': true,
@@ -101,4 +109,4 @@
                             'orderable': false,
                         }]
                     })
-                </script>
+</script>
