@@ -34,7 +34,6 @@ namespace YSLProject.Models
         }
         public enum MembershipStatus : int
         {
-
             //Certified = 1,
             //NonCertified = 2,
             Active = 3,

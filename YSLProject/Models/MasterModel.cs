@@ -5,8 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace YSLProject.Models
-{
-   
+{   
     public class MemberMasterModel
     {
         public int? MemberID { get; set; }

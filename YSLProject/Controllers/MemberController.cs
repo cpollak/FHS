@@ -321,7 +321,6 @@ namespace YSLProject.Controllers
             }
             return RedirectToAction("Index", "Member");
         }
-
         public async Task<IActionResult> DeleteMember(int Id)
         {
             var MemberM = await _context.MemberMaster.FindAsync(Id);

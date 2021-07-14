@@ -162,7 +162,6 @@ namespace YSLProject.Controllers
             data = data.Where(s => s.NextStepTask == NextStepTask).ToList();
             if (FltData.Count > 0)
             {   
-
                 data = data.Where(s => FltData.Contains(s.MemberID.Value)).ToList();
             }
 
