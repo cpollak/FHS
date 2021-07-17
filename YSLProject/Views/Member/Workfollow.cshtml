@@ -348,6 +348,11 @@
                                                         @Html.DisplayFor(model => model.CurrentFacility)
 
                                                     </div>
+                                                    <div class="col-md-2"></div>
+                                                    <div class="col-md-2">
+                                                        <label style="font-weight:bold">&nbsp;</label><br />
+                                                        <button style="width:108%;" onclick="ExporttoExcel()" title="Export to Excel" class="btn btn-primary">Export to Excel</button>
+                                                    </div>
                                                     <table id="exampleworkflow" class="table table-striped table-bordered dom-jQuery-events">
                                                         <thead>
                                                             <tr>
@@ -539,7 +544,11 @@
                                                     @Html.DisplayFor(model => model.CurrentFacility)
 
                                                 </div>
-
+                                                <div class="col-md-2"></div>
+                                                <div class="col-md-2">
+                                                    <label style="font-weight:bold">&nbsp;</label><br />
+                                                    <button style="width:108%;" onclick="ExporttoLogs()" title="Export to Excel" class="btn btn-primary">Export to Excel</button>
+                                                </div>
                                                 <div class="table-responsive">
                                                     <table id="example3" class="table table-striped table-bordered dom-jQuery-events">
                                                         <thead>
@@ -552,20 +561,20 @@
                                                         <tbody id="tfbody">
                                                         </tbody>
                                                         @*<tbody>
-                                                                @foreach (var item in Model.LogsModels)
-                                                                {
-                                                                    <tr>
+                    @foreach (var item in Model.LogsModels)
+                    {
+                        <tr>
 
-                                                                        <td>
-                                                                            @Html.DisplayFor(modelItem => item.ActionName)
-                                                                        </td>
-                                                                        <td>
-                                                                            @Convert.ToDateTime(item.CreatedDate).ToString("M/dd/yyyy hh:mm tt")
-                                                                        </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ActionName)
+                            </td>
+                            <td>
+                                @Convert.ToDateTime(item.CreatedDate).ToString("M/dd/yyyy hh:mm tt")
+                            </td>
 
-                                                                    </tr>
-                                                                }
-                                                            </tbody>*@
+                        </tr>
+                    }
+                </tbody>*@
                                                     </table>
                                                 </div>
                                             </div>
@@ -731,7 +740,7 @@
         function populateDataTable(data) {
             $("#example3").DataTable().clear();
             $.each(data, function (index, value) {
-                debugger;
+
                 $('#example3').dataTable().fnAddData([
                     (value.actionName == null ? "" : value.actionName),
                     (value.createdDt == null ? "" : value.createdDt)
@@ -756,7 +765,7 @@
         function populateDataTableworkflow(data) {
             $("#exampleworkflow").DataTable().clear();
             $.each(data, function (index, value) {
-                debugger;
+
                 $('#exampleworkflow').dataTable().fnAddData([
                     (value.currentStatus == null ? "" : value.currentStatus),
                     (value.outcome == null ? "" : value.outcome),
@@ -920,7 +929,7 @@
                 "Facility": Facility
             },
             success: function (data) {
-                debugger;
+
                 $("#tfbody").html("");
                 var thtml = "";
                 if (data == "notDone") {
@@ -949,7 +958,7 @@
                 "Facility": Facility
             },
             success: function (data) {
-                debugger;
+
                 $("#tfbodyworkflow").html("");
                 var thtml = "";
                 if (data == "notDone") {
@@ -966,6 +975,68 @@
         });
         }
 
+        function ExporttoExcel() {
+             var MemberID =  @Model.MemberID;
+            var Facility = $("#CurrentFacility").val();
+
+            $.ajax({
+            url: '@Url.Action("WorkflowFilterEXCEL", "Member")',
+                type: "GET",
+                data: {
+                    "MemberID": MemberID,
+                    "Facility": Facility
+                },
+                success: function (data) {
+                debugger;
+                var bytes = Base64ToBytes(data.fileContents);
+                //var bytes = new Uint8Array(data);
+                var blob = new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = "MemberWorkflow.xlsx";
+                link.click();
+            },
+            error: function (Result) {
+            }
+        });
+        }
+
+        function Base64ToBytes(base64) {
+            var s = window.atob(base64);
+            var bytes = new Uint8Array(s.length);
+            for (var i = 0; i < s.length; i++) {
+                bytes[i] = s.charCodeAt(i);
+            }
+            return bytes;
+        };
+
+
+        function ExporttoLogs() {
+        var MemberID =  @Model.MemberID;
+        var Facility = $("#Facility").val();
+
+        $.ajax({
+            url: '@Url.Action("LogFilter", "Member")',
+            type: "POST",
+            data: {
+                "MemberID": MemberID,
+                "Facility": Facility
+            },
+            success: function (data) {
+                debugger;
+                var bytes = Base64ToBytes(data.fileContents);
+                //var bytes = new Uint8Array(data);
+                var blob = new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = "Log.xlsx";
+                link.click();
+            },
+            error: function (Result) {
+            }
+            });
+        }
+
         function GetContactsList() {
         var MemberID =  @Model.MemberID;
         $.ajax({
@@ -975,7 +1046,7 @@
                 "MemberID": MemberID,
             },
             success: function (data) {
-                debugger;
+
                 $("#tcontactbody").html("");
                 var thtml = "";
                 if (data == "notDone") {

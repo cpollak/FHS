@@ -222,31 +222,37 @@
                     </li>
                 }
 
+                @if (@Context.Session.GetString("UserType") == "Admin") { 
+                    <li class=" nav-item">
+                        <a href="#"><i class="la la-clipboard"></i><span class="menu-title" data-i18n="nav.invoice.main"> Manage Members</span></a>
+                        <ul class="menu-content">
+                            <li>
+                                <a class="menu-item" asp-area="" asp-controller="Member" asp-action="UploadAddMember"><i></i><span data-i18n="nav.invoice.invoice_summary">Add Member</span></a>
+                            </li>
+                            <li>
+                                <a class="menu-item" asp-area="" asp-controller="Member" asp-action="Index"><i></i><span data-i18n="nav.invoice.invoice_template">Member List</span></a>
+                            </li>
+                            <li>
+                                <a class="menu-item" asp-area="" asp-controller="Member" asp-action="UploadAddMemberPIT"><i></i><span data-i18n="nav.invoice.invoice_summary">Add Member PIT</span></a>
+                            </li>
+                            <li>
+                                <a class="menu-item" asp-area="" asp-controller="Member" asp-action="UploadAddMemberContacts"><i></i><span data-i18n="nav.invoice.invoice_summary">Add Member Contacts</span></a>
+                            </li>
+                            <li>
+                                <a class="menu-item" asp-area="" asp-controller="Member" asp-action="UploadAddMemberSpousal"><i></i><span data-i18n="nav.invoice.invoice_summary">Add Member Spousal</span></a>
+                            </li>
 
-                <li class=" nav-item">
-                    <a href="#"><i class="la la-clipboard"></i><span class="menu-title" data-i18n="nav.invoice.main"> Manage Members</span></a>
-                    <ul class="menu-content">
-                        <li>
-                            <a class="menu-item" asp-area="" asp-controller="Member" asp-action="UploadAddMember"><i></i><span data-i18n="nav.invoice.invoice_summary">Add Member</span></a>
-                        </li>
-                        <li>
-                            <a class="menu-item" asp-area="" asp-controller="Member" asp-action="Index"><i></i><span data-i18n="nav.invoice.invoice_template">Member List</span></a>
-                        </li>
-                        <li>
-                            <a class="menu-item" asp-area="" asp-controller="Member" asp-action="UploadAddMemberPIT"><i></i><span data-i18n="nav.invoice.invoice_summary">Add Member PIT</span></a>
-                        </li>
-                        <li>
-                            <a class="menu-item" asp-area="" asp-controller="Member" asp-action="UploadAddMemberContacts"><i></i><span data-i18n="nav.invoice.invoice_summary">Add Member Contacts</span></a>
-                        </li>
-                        <li>
-                            <a class="menu-item" asp-area="" asp-controller="Member" asp-action="UploadAddMemberSpousal"><i></i><span data-i18n="nav.invoice.invoice_summary">Add Member Spousal</span></a>
-                        </li>
-
-                    </ul>
-                </li>
-
+                            <li>
+                                <a class="menu-item" asp-area="" asp-controller="Member" asp-action="UpdateMedicalId"><i></i><span data-i18n="nav.invoice.invoice_summary">Update MedicalId</span></a>
+                            </li>
+                            <li>
+                                <a class="menu-item" asp-area="" asp-controller="Member" asp-action="AssignMembers"><i></i><span data-i18n="nav.invoice.invoice_summary">Assign Member</span></a>
+                            </li>
+                        </ul>
+                    </li>
+                }
                 <li>
-                    <a  asp-area="" asp-controller="Member" asp-action="Reports"><i class="la la-clipboard"></i><span class="menu-title" data-i18n="">Reports</span></a>
+                    <a asp-area="" asp-controller="Member" asp-action="Reports"><i class="la la-clipboard"></i><span class="menu-title" data-i18n="">Reports</span></a>
                 </li>
             </ul>
         </div>
@@ -295,7 +301,24 @@
     <script src="~/Theme/app-assets/js/scripts/tables/datatables/datatable-advanced.js"></script>
     <!-- END: Page JS-->
 
+    <script>
 
+        $('.main-menu-content li').each(function (index, obj) {
+            if (sessionStorage.getItem("sele") != null) {
+                if ($(this).text().trim() == sessionStorage.getItem("sele")) {
+                    $('.main-menu-content li').removeClass('active');
+                    $(this).addClass('active');
+                }
+            }
+        })
+
+        $('li').click(function () {
+            var valu = $(this).text().trim();
+            sessionStorage.setItem("sele",valu);
+        })
+       
+       
+    </script>
     @RenderSection("Scripts", required: false)
 </body>
 <!-- END: Body-->

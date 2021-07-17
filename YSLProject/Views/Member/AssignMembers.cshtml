@@ -1,0 +1,259 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+
+@*<h1 id="UserName">'@ViewBag.UserName'</h1>*@
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.24/datatables.min.css" />
+<link href="~/css/loders.css" rel="stylesheet" />
+<style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+    .row::after {
+        content: "";
+        clear: both;
+        display: table;
+    }
+
+    [class*="col-"] {
+        float: left;
+        padding: 15px;
+    }
+
+    .col-1 {
+        width: 8.33%;
+    }
+
+    .col-2 {
+        width: 16.66%;
+    }
+
+    .col-3 {
+        width: 25%;
+    }
+
+    .col-4 {
+        width: 33.33%;
+    }
+
+    .col-5 {
+        width: 41.66%;
+    }
+
+    .col-6 {
+        width: 50%;
+    }
+
+    .col-7 {
+        width: 58.33%;
+    }
+
+    .col-8 {
+        width: 66.66%;
+    }
+
+    .col-9 {
+        width: 75%;
+    }
+
+    .col-10 {
+        width: 83.33%;
+    }
+
+    .col-11 {
+        width: 91.66%;
+    }
+
+    .col-12 {
+        width: 100%;
+    }
+
+    html {
+        font-family: "Lucida Sans", sans-serif;
+    }
+
+    .header {
+        /* background-color: #9933cc;
+        color: #ffffff;*/
+        padding: 15px;
+    }
+
+    .menu ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .menu li {
+        padding: 8px;
+        /* margin-bottom: 7px;
+        background-color: #33b5e5;
+        color: #ffffff;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);*/
+    }
+
+        .menu li:hover {
+            /*background-color: #0099cc;*/
+        }
+
+    .btn-warning {
+        padding: 3px 1rem;
+    }
+
+    table.dataTable thead th, table.dataTable thead td {
+        padding: 10px 0px;
+    }
+
+    table.dataTable thead > tr > th.sorting {
+        padding-right: 0px;
+        padding-left: 5px;
+    }
+</style>
+<div class="desutj">
+    <div class="loader"></div>
+</div>
+
+<div class="header">
+
+    <div class="form-group row">
+        <div class="col-md-2">
+            <label>Select User </label>
+            @Html.DropDownList("UserId", (IEnumerable<SelectListItem>)ViewBag.UserList, htmlAttributes: new { @class = "form-control" })
+        </div>
+    </div>
+</div>
+
+<div class="row">
+
+
+    <div class="col-12">
+        <div class="card">
+            <div class="card-content collapse show">
+
+                <div class="card-body card-dashboard dataTables_wrapper dt-bootstrap">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered " id="example">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        @Html.DisplayName("First Name")
+                                    </th>
+                                    <th>
+                                        @Html.DisplayName("Last Name")
+                                    </th>
+                                    <th>
+                                        @Html.DisplayName("MedicaidID")
+                                    </th>
+                                    <th>
+                                        @Html.DisplayName("ResidenceID")
+                                    </th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tfbody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");
+
+
+    }
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+
+    <script>
+        $(".desutj").css("display", "none");
+        $(document).ready(function () {
+        $(".desutj").css("display", "block");
+        $.ajax({
+            url: '@Url.Action("AssignMembersFilter", "Member")',
+            type: "GET",
+            success: function (data) {
+                //$("#tfbody").html("");
+                var thtml = "";
+                if (data == "notDone") {
+                    var table = $('#example').DataTable();
+                    table.clear().draw();
+                    $(".desutj").css("display", "none");
+                }
+                else {
+                    myJsonData = data;
+                    populateDataTable(myJsonData);
+                    $(".desutj").css("display", "none");
+                }
+            },
+            error: function (Result) {
+            }
+        });
+        })
+        $('#example').DataTable({
+            'paging': true,
+            'lengthChange': true,
+            'searching': true,
+            "order": [],
+            'info': true,
+            'autoWidth': true,
+            "deferRender": true,
+
+            //'columnDefs': [{
+            //    'targets': [4],
+            //    'orderable': false,
+            //}]
+        })
+
+        $("#UserName").text("Welcome " + '@ViewBag.UserName');
+
+
+        function populateDataTable(data) {
+            $("#example").DataTable().clear();
+            $.each(data, function (index, value) {
+                var isclose = '<input id="ReClose" name="ReClose" style="width: 26px;height: 22px;display: inline;opacity: unset;margin-top: 2px;" type="checkbox" value=' + value.memberID+'>';
+                $('#example').dataTable().fnAddData([
+                    (value.firstName == null ? "" : value.firstName),
+                    (value.lastName == null ? "" : value.lastName),
+                    (value.medicaidID == null ? "" : value.medicaidID),
+                    (value.residentID == null ? "" : value.residentID),
+                    isclose
+                ]);
+            })
+        }
+
+        $(document).on('click', '#ReClose', function () {
+            debugger;
+            if ($(this).is(':checked')) {
+                isAssignMember(this.value, 1);
+            } else {
+                isAssignMember(this.value, 0);
+            }
+        })
+
+
+        function isAssignMember(MemberId, ischeck) {
+
+        $(".desutj").attr("style", "display:block");
+        $.ajax({
+            url: '@Url.Action("AssignMemId", "Member")',
+            type: "POST",
+            data: { "MemberId": MemberId, "ischeck": ischeck, "UserId": $("#UserId").val()},
+            success: function (data) {
+                $(".desutj").attr("style", "display:none");
+            },
+            error: function (Result) {
+            }
+        });
+    }
+
+    </script>
+}

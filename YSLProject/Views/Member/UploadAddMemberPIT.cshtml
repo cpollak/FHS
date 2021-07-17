@@ -7,6 +7,7 @@
 <h3>Import Member PIT</h3>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href="~/css/loders.css" rel="stylesheet" />
 <hr />
 <style>
     #Professional {
@@ -19,6 +20,9 @@
         height: 90%;
     }
 </style>
+<div class="desutj" style="display:none;">
+    <div class="loader"></div>
+</div>
 <div class="row">
     <div class="col-md-12">
         <form asp-action="UploadAddMemberPIT" enctype="multipart/form-data">
@@ -56,4 +60,9 @@
 
 }
 
-
+<script>
+    $(".desutj").css("display", "none");
+    $(".sve").click(function () {
+        $(".desutj").css("display", "block");
+    });
+</script>

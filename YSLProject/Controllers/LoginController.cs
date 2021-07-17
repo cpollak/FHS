@@ -45,6 +45,7 @@ namespace YSLProject.Controllers
                     HttpContext.Session.SetString("UserID", UserId.ToString());
                     HttpContext.Session.SetString("UserType", Enum.GetName(typeof(UserType), Convert.ToInt32(data.FirstOrDefault().UserType)));
                     HttpContext.Session.SetString("UserName", data.FirstOrDefault().UserName);
+                    HttpContext.Session.SetString("UserTypeId",data.FirstOrDefault().UserType.ToString());
                     //var Permissiondate = _context.PermissionMaster.Where(a => a.UserId == Convert.ToInt32(UserId)).ToList();
                     //List<PermissionMasterModel> objs = new List<PermissionMasterModel>();
                     //if (Permissiondate.Count > 0)

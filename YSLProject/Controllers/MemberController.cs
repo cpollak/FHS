@@ -23,6 +23,7 @@ using System.Reflection;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using Microsoft.AspNetCore.StaticFiles;
+using ClosedXML.Excel;
 
 namespace YSLProject.Controllers
 {
@@ -1370,6 +1371,124 @@ namespace YSLProject.Controllers
             return RedirectToAction("Index", "Dashboard");
         }
 
+        public IActionResult UpdateMedicalId()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateMedicalId(IFormFile postedFile)
+        {
+            string JSONresult = "Done";
+
+            if (postedFile != null)
+            {
+                //Create a Folder.
+                string path = Path.Combine(this.Environment.WebRootPath, "Uploads");
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+                else
+                {
+                    string[] Files = Directory.GetFiles(path);
+                    foreach (string file in Files)
+                    {
+                        System.IO.File.Delete(file);
+                        //Directory.Delete(path);
+                    }
+                    //Directory.Delete(path);
+                }
+
+                //Save the uploaded Excel file.
+                string fileName = Path.GetFileName(postedFile.FileName);
+                string filePath = Path.Combine(path, fileName);
+                using (FileStream stream = new FileStream(filePath, FileMode.Create))
+                {
+                    postedFile.CopyTo(stream);
+                }
+
+                //Read the connection string for the Excel file.
+                //string conString = this.Configuration.GetConnectionString("ExcelConString");
+                string conString = "";
+                string extension = Path.GetExtension(postedFile.FileName);
+                DataTable dt = new DataTable();
+                if (extension == ".xls" || extension == ".xlsx")
+                {
+                    switch (extension)
+                    {
+                        case ".xls": //Excel 97-03.
+                            conString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + filePath + ";Extended Properties='Excel 8.0;HDR=YES'";
+                            break;
+                        case ".xlsx": //Excel 07 and above.
+                            conString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + filePath + ";Extended Properties='Excel 8.0;HDR=YES'";
+                            break;
+
+                    }
+
+                    conString = string.Format(conString, filePath);
+                    try
+                    {
+                        using (OleDbConnection connExcel = new OleDbConnection(conString))
+                        {
+                            using (OleDbCommand cmdExcel = new OleDbCommand())
+                            {
+                                using (OleDbDataAdapter odaExcel = new OleDbDataAdapter())
+                                {
+                                    cmdExcel.Connection = connExcel;
+
+                                    //Get the name of First Sheet.
+                                    connExcel.Open();
+                                    DataTable dtExcelSchema;
+                                    dtExcelSchema = connExcel.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, null);
+                                    string sheetName = dtExcelSchema.Rows[0]["TABLE_NAME"].ToString();
+                                    connExcel.Close();
+
+                                    //Read Data from First Sheet.
+                                    connExcel.Open();
+                                    cmdExcel.CommandText = "SELECT * From [" + sheetName + "]";
+                                    odaExcel.SelectCommand = cmdExcel;
+                                    odaExcel.Fill(dt);
+                                    connExcel.Close();
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        return Content("<script language='javascript' type='text/javascript'>alert('" + ex.Message + "');</script>");
+                    }
+                }
+                dt = dt.Rows.Cast<DataRow>().Where(row => !row.ItemArray.All(f => f is DBNull)).CopyToDataTable();
+
+                foreach (DataRow dr in dt.Rows)
+                {
+
+                    MemberMaster obj1 = new MemberMaster();
+                    string Medicaid = (dt.Columns.Contains("OldMedicalID") ? dr["OldMedicalID"].ToString() : null);
+
+                    obj1 = _context.MemberMaster.AsNoTracking().Where(s => s.MedicaidID == Medicaid).AsNoTracking().FirstOrDefault();
+                    if (obj1 != null)
+                    {
+                        
+                        int mID = obj1.MemberID;
+
+
+                        
+                        obj1.MedicaidID = (dt.Columns.Contains("NewMedicalID") ? dr["NewMedicalID"].ToString() : obj1.MedicaidID);
+
+                        _context.Update(obj1);
+                        _context.SaveChanges();
+
+                    }
+                }
+
+                return RedirectToAction("Index", "Dashboard");
+
+            }
+            return RedirectToAction("Index", "Dashboard");
+        }
+
         public IActionResult UploadAddMemberSpousal()
         {
             return View();
@@ -1832,6 +1951,55 @@ namespace YSLProject.Controllers
             return Json(data);
         }
 
+        [HttpPost]
+        public IActionResult LogFilterExcel(int? MemberID, string Facility)
+        {
+            if (HttpContext.Session.GetString("UserName") == null)
+            {
+                return RedirectToAction("Login", "Login");
+            }
+
+            MemberMaster model = _context.MemberMaster.Where(m => m.MemberID == MemberID).FirstOrDefault();
+            string medicid = model.MedicaidID;
+            var data = (from l in _context.Logs
+                        join m in _context.MemberMaster
+                        on l.MemberID equals m.MemberID
+                        where m.MedicaidID == medicid && m.Facility == (Facility == null ? m.Facility : Facility)
+                        select new
+                        {
+                            l.MemberID,
+                            l.ActionName,
+                            l.CreatedDate,
+                        }).ToList()
+                        .Select(a => new LogsModel
+                        {
+                            MemberID = a.MemberID,
+                            ActionName = a.ActionName,
+                            CreatedDt = a.CreatedDate.Value.ToString("MM/dd/yyyy")
+                        });
+            DataTable table = (DataTable)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(data), (typeof(DataTable)));
+            var Emplist = JsonConvert.SerializeObject(table);
+            DataTable dt11 = (DataTable)JsonConvert.DeserializeObject(Emplist, (typeof(DataTable)));
+            dt11.TableName = "Log";
+            FileContentResult robj;
+            byte[] chends = null;
+            using (XLWorkbook wb = new XLWorkbook())
+            {
+                wb.Worksheets.Add(dt11);
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    wb.SaveAs(stream);
+                    var bytesdata = File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Log.xlsx");
+                    robj = bytesdata;
+                    chends = stream.ToArray();
+                }
+            }
+
+            //return Json(Convert.ToBase64String(chends));
+
+            return Json(robj);
+        }
+
 
         [HttpPost]
         public IActionResult WorkflowFilter(int? MemberID, string Facility)
@@ -1871,6 +2039,78 @@ namespace YSLProject.Controllers
                         });
 
             return Json(data);
+        }
+
+        [HttpGet]
+        public IActionResult WorkflowFilterEXCEL(int? MemberID, string Facility)
+        {
+            if (HttpContext.Session.GetString("UserName") == null)
+            {
+                return RedirectToAction("Login", "Login");
+            }
+
+            MemberMaster model = _context.MemberMaster.Where(m => m.MemberID == MemberID).FirstOrDefault();
+            string medicid = model.MedicaidID;
+            var data = (from l in _context.Recertification_Follow_Up
+                        join m in _context.MemberMaster
+                        on l.MemberId equals m.MemberID
+                        where m.MedicaidID == medicid && m.Facility == (Facility == null ? m.Facility : Facility)
+                        select new
+                        {
+                            l.MemberId,
+                            l.FollowUpID,
+                            l.CurrentStatus,
+                            l.Outcome,
+                            l.Notes,
+                            l.NextStepTask,
+                            l.NewStatus,
+                            l.CreatedDate
+                        }).ToList()
+                        .Select(s => new Recertification_Follow_UpModel
+                        {
+                            FollowUpID = s.FollowUpID,
+                            MemberId = s.MemberId,
+                            CurrentStatus = Convert.ToInt32(s.CurrentStatus) > 0 ? Enum.GetName(typeof(FollowupStatus), Convert.ToInt32(s.CurrentStatus)).Replace("_", " ") : "",
+                            Outcome = s.Outcome,
+                            Notes = s.Notes,
+                            NextStepTask = Convert.ToInt32(s.NextStepTask) > 0 ? Enum.GetName(typeof(FollowupStatus), Convert.ToInt32(s.NextStepTask)).Replace("_", " ") : "",
+                            NewStatus = Convert.ToInt32(s.NewStatus) > 0 ? Enum.GetName(typeof(FollowupStatus), Convert.ToInt32(s.NewStatus)).Replace("_", " ") : "",
+                            CreatedDt = s.CreatedDate.ToString("MM/dd/yyyy"),
+                        });
+            DataTable table = (DataTable)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(data), (typeof(DataTable)));
+            Parallel.ForEach(table.Rows.Cast<DataRow>(), (row) =>
+            {
+                string Createddate = row["CreatedDate"].ToString();
+                if(Createddate.Contains("01/01/0001 00:00:00"))
+                {
+                    row["CreatedDate"] = DBNull.Value;
+                }
+                string Nextduedate = row["Nextduedate"].ToString();
+                if (Createddate.Contains("01/01/0001 00:00:00"))
+                {
+                    row["Nextduedate"] = DBNull.Value;
+                }
+            });
+                var Emplist = JsonConvert.SerializeObject(table);
+            DataTable dt11 = (DataTable)JsonConvert.DeserializeObject(Emplist, (typeof(DataTable)));
+            dt11.TableName = "MemberWorkflow";
+            FileContentResult robj;
+            byte[] chends = null;
+            using (XLWorkbook wb = new XLWorkbook())
+            {
+                wb.Worksheets.Add(dt11);
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    wb.SaveAs(stream);
+                    var bytesdata = File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "MemberWorkflow.xlsx");
+                    robj = bytesdata;
+                    chends = stream.ToArray();
+                }
+            }
+
+            //return Json(Convert.ToBase64String(chends));
+
+            return Json(robj);
         }
 
 
@@ -2296,6 +2536,10 @@ namespace YSLProject.Controllers
                     memory.Position = 0;
                     return File(memory, "application/pdf", Path.GetFileName(path));
                 }
+                else
+                {
+
+                }
                 return View();
             }
             else
@@ -2308,8 +2552,10 @@ namespace YSLProject.Controllers
         {
             List<MemberMaster> ObjCheck = new List<MemberMaster>();
 
-            ObjCheck = _context.MemberMaster.AsNoTracking().Where(s => s.MembershipStatus == 4).AsNoTracking().ToList();
-            if (ObjCheck != null)
+             int   UserId = Convert.ToInt32(HttpContext.Session.GetString("UserTypeId"));
+            
+            ObjCheck = _context.MemberMaster.AsNoTracking().Where(s => s.MembershipStatus == 4 && s.AssignId == (UserId == 1 ?  s.AssignId : UserId)).AsNoTracking().ToList();
+            if (ObjCheck != null && ObjCheck.Count > 0)
             {
 
                 DataTable dt = ToDataTable(ObjCheck);
@@ -2439,6 +2685,64 @@ namespace YSLProject.Controllers
             return dataTable;
         }
 
-    }
+        public IActionResult AssignMembers()
+        {
+            ViewBag.UserList = new SelectList(_context.UserMaster.Where(a=>a.IsActive == true && a.UserType == 2).ToList(), "UserID", "UserName");
+            return View();
+        }
 
+        [HttpGet]
+        public IActionResult AssignMembersFilter()
+        {
+            if (HttpContext.Session.GetString("UserName") == null)
+            {
+                return RedirectToAction("Login", "Login");
+            }
+            var data = _context.MemberMaster.OrderByDescending(s => s.CreatedDate).
+            Select(s => new
+            {
+                s.MemberID,
+                s.FirstName,
+                s.LastName,
+                s.CreatedDate,
+                s.Facility,
+                s.MedicaidID,
+                s.ResidentID,
+            }).ToList()
+            .Select(a => new MemberMasterModel
+            {
+                MemberID = a.MemberID,
+                FirstName = a.FirstName,
+                LastName = a.LastName,
+                CreatedDate = a.CreatedDate.Value.ToString("MM/dd/yyyy"),
+                Facility = a.Facility,
+                MedicaidID = a.MedicaidID,
+                ResidentID = a.ResidentID
+            });
+            if (data.Count() > 100) { data = data.Take(100); }
+            return Json(data);
+        }
+
+        public IActionResult AssignMemId(int MemberId,string ischeck,int UserId)
+        {
+            int member =( _context.MemberMaster.Where(a => a.MemberID == MemberId).Count() > 0  ? _context.MemberMaster.Where(a => a.MemberID == MemberId).FirstOrDefault().MemberID : 0);
+            if(member > 0 )
+            {
+                MemberMaster MemberMa =  _context.MemberMaster.Where(a => a.MemberID == MemberId).FirstOrDefault();
+                if (ischeck == "0")
+                {
+                    MemberMa.AssignId = 0;
+                    _context.MemberMaster.Update(MemberMa);
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    MemberMa.AssignId = UserId;
+                    _context.MemberMaster.Update(MemberMa);
+                    _context.SaveChanges();
+                }
+            }
+            return Json(member);
+        }
+    }
 }

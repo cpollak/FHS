@@ -145,7 +145,7 @@
             @Html.DropDownList("NextStepTask", (IEnumerable<SelectListItem>)ViewBag.FollowupStatusList, htmlAttributes: new { @class = "form-control" })
         </div>
         <div class="col-md-1">
-            <label></label>
+            <label>&nbsp;</label><br />
             <input type="button" id="Filter" value="Filter" class="btn btn-primary" />
 
         </div>
@@ -163,7 +163,13 @@
             Followup End :
             <input type="date" data-date-format="MM/dd/yyyy" id="followupE" class="form-control" />
         </div>
+        <div class="col-md-3">
 
+        </div>
+        <div class="col-md-2">
+            <label style="font-weight:bold">&nbsp;</label><br />
+            <button style="float:right;" onclick="ExporttoExcel()" title="Export to Excel" class="btn btn-primary">Export to Excel</button>
+        </div>
     </div>
 
 </div>
@@ -493,5 +499,59 @@
             if (localStorage.getItem("followupE") != null)
                 $("#followupE").val(localStorage.getItem("followupE"));
         }
+
+        function ExporttoExcel() {
+             $(".desutj").css("display", "block");
+        var FromDate = $("#FromDate").val();
+        var ToDate = $("#ToDate").val();
+        var SearchbyName = $("#SearchbyName").val();
+        var MedicaidID = $("#MedicaidID").val();
+        var ResidenceID = $("#ResidenceID").val();
+        var UserName = $("#UserName").val();
+        var Language = $("#Language").val();
+        var RecertMonth = $("#RecertMonth").val();
+        var MembershipStatus = $("#MembershipStatus").val();
+            var Followuptimes = $("#Followuptimes").val();
+            var Facility = $("#Facility").val();
+            var NextStepTask = $("#NextStepTask").val();
+            var Phone = $("#Phone").val();
+            var followupS = $("#followupS").val();
+            var followupE = $("#followupE").val();
+        $.ajax({
+            url: '@Url.Action("MemberFilterExcel", "Dashboard")',
+            type: "POST",
+            data: {
+                "FromDate": FromDate, "ToDate": ToDate, "SearchbyName": SearchbyName,
+                "MedicaidID": MedicaidID, "ResidenceID": ResidenceID, "UserName": UserName,
+                "Language": Language, "MembershipStatus": MembershipStatus, "RecertMonth": RecertMonth,
+                "Followuptimes": Followuptimes, "Facility": Facility, "NextStepTask": NextStepTask,
+                "Phone": Phone, "followupS": followupS, "followupE": followupE
+            },
+            success: function (data) {
+                debugger;
+                var bytes = Base64ToBytes(data.fileContents);
+                //var bytes = new Uint8Array(data);
+                var blob = new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = "Member.xlsx";
+                link.click();
+
+                $(".desutj").css("display", "none");
+            },
+            error: function (Result) {
+            }
+        });
+        }
+
+        function Base64ToBytes(base64) {
+            var s = window.atob(base64);
+            var bytes = new Uint8Array(s.length);
+            for (var i = 0; i < s.length; i++) {
+                bytes[i] = s.charCodeAt(i);
+            }
+            return bytes;
+        };
+
     </script>
 }

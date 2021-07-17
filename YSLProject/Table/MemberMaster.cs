@@ -117,5 +117,7 @@ namespace YSLProject.Table
         public string Gender { get; set; }
 
         public string Facility { get; set; }
+
+        public int? AssignId { get; set; }
     }
 }
