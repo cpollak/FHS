@@ -120,6 +120,8 @@ namespace YSLProject.Models
 
         public string CurrentFacility { get; set; }
 
+        public string Action { get; set; }
+
         public List<Recertification_Follow_UpModel> Recertification_Follow_UpModels { get; set; }
         public List<ContactModel> contactModels { get; set; }
         public List<SpousalModel> SpousalModels { get; set; }

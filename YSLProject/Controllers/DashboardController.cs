@@ -14,12 +14,17 @@ using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
 using System.Threading.Tasks;
 using YSLProject.Models;
 using YSLProject.Table;
 using static iTextSharp.text.Font;
 //using YSLProject.Reports;
+using System.Linq.Dynamic;
 using static YSLProject.Models.Enumdata;
+using Microsoft.EntityFrameworkCore;
+//using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 
 namespace YSLProject.Controllers
 {
@@ -92,8 +97,18 @@ namespace YSLProject.Controllers
         }
 
         [HttpPost]
-        public IActionResult MemberFilter(string FromDate, string ToDate, string SearchbyName, string MedicaidID, string ResidenceID, string UserName, string Language, string MembershipStatus, string RecertMonth, string Followuptimes, string Facility, string NextStepTask, string Phone, string followupS, string followupE,int UserId)
+        public async Task<IActionResult> MemberFilter(string FromDate, string ToDate, string SearchbyName, string MedicaidID, string ResidenceID, string UserName, string Language, string MembershipStatus, string RecertMonth, string Followuptimes, string Facility, string NextStepTask, string Phone, string followupS, string followupE, int UserId)
         {
+            
+            var draw = HttpContext.Request.Form["draw"].FirstOrDefault();
+            //var start = HttpContext.Request.Form["start"].FirstOrDefault();
+            //var length = Request.Form.GetValues("length").FirstOrDefault();
+            var sortColumn = HttpContext.Request.Form["columns[" + HttpContext.Request.Form["order[0][column]"].FirstOrDefault() + "][name]"].FirstOrDefault();
+            var sortColumnDir = HttpContext.Request.Form["order[0][dir]"].FirstOrDefault();
+            var searchValue = HttpContext.Request.Form["search[value]"].FirstOrDefault();
+
+
+
             if (HttpContext.Session.GetString("UserName") == null)
             {
                 return RedirectToAction("Login", "Login");
@@ -112,8 +127,51 @@ namespace YSLProject.Controllers
             }
             var languagelist = _context.LanguageMaster.ToList();
             var NestStepTaskList = _context.Recertification_Follow_Up.Where(s => s.NewStatus == NextStepTask).ToList();
-            UserId = Convert.ToInt32(HttpContext.Session.GetString("UserTypeId"));
+           string UserIdtype= HttpContext.Session.GetString("UserTypeId").ToString();
+            string UserIds = HttpContext.Session.GetString("UserID").ToString();
+           
             var userlist = _context.UserMaster.ToList();
+            //List<SqlParameter> pc = new List<SqlParameter>
+            //{
+
+                
+
+            //new SqlParameter("@Spara", "1"),
+            //        new SqlParameter("@FromDate",(FromDate == null ? ""  : Convert.ToDateTime(FromDate).ToString())),
+            //        new SqlParameter("@ToDate",(ToDate == null ? ""  : Convert.ToDateTime(ToDate).ToString())),
+            //        new SqlParameter("@SearchbyName",(SearchbyName == null ? ""  : SearchbyName)),
+            //        new SqlParameter("@Facility",(Facility ==null ? "" :Facility)),
+            //        new SqlParameter("@MedicaidID",(MedicaidID == null ? ""  : MedicaidID)),
+            //        new SqlParameter("@ResidenceID",(ResidenceID == null ? "" : ResidenceID)),
+            //        new SqlParameter("@Language",(Language == null ? ""  :Language)),
+            //        new SqlParameter("@RecertMonth",(RecertMonth== null ? "" :RecertMonth)),
+            //        new SqlParameter("@PrimaryPhone",(Phone == null ? "" :Phone)),
+            //        new SqlParameter("@MembershipStatus",(MembershipStatus == null ? "" :MembershipStatus)),
+            //        new SqlParameter("@SortColumn",sortColumn),
+            //        new SqlParameter("@SortOrder",sortColumnDir),
+            //        new SqlParameter("@AssignId",(UserIdtype == "1" ? ""  : UserIds)),
+            //        new SqlParameter("@Offset",start),
+            //        new SqlParameter("@Limit",length),
+            //};
+
+
+           
+            //try
+            //{
+
+
+            //    List<MemberMasterSP> objss = _context.memberMasterSPs.FromSqlRaw("SP_UserMaster @Spara,@FromDate,@ToDate,@SearchbyName",
+            //                           param).ToList();
+            //    //List<MemberMasterSP> objss = _context.memberMasterSPs.FromSqlRaw("SP_UserMaster @Spara,@ResidenceID",
+            //    //                      pc.ToArray()).ToList();
+
+            //}
+            //catch (Exception ex)
+            //{
+
+                
+            //}
+            
             var data = _context.MemberMaster.Where(
             a => a.CreatedDate >= (FromDate == null ? a.CreatedDate : Convert.ToDateTime(FromDate)) &&
              a.CreatedDate <= (ToDate == null ? a.CreatedDate : Convert.ToDateTime(ToDate)) &&
@@ -127,7 +185,7 @@ namespace YSLProject.Controllers
              a.RecertMonth == (RecertMonth == null ? a.RecertMonth : RecertMonth) &&
              a.PrimaryPhone == (Phone == null ? a.PrimaryPhone : Phone) &&
              a.MembershipStatus == (MembershipStatus == null ? a.MembershipStatus : Convert.ToInt32(MembershipStatus))
-             && a.AssignId == (UserId == 1 ? a.AssignId : UserId)
+             //&& a.AssignId == (UserId == 1 ? a.AssignId :  HttpContext.Session.GetString("UserID"))
             ).OrderByDescending(s => s.CreatedDate).
             Select(s => new
             {
@@ -157,22 +215,54 @@ namespace YSLProject.Controllers
                 MembershipStatu = Enum.GetName(typeof(MembershipStatus), Convert.ToInt32(a.MembershipStatus)),
                 CreatedUser = userlist.Count() > 0 ? userlist.Where(s => s.UserID == a.CreatedBy).FirstOrDefault().UserName : "",
                 FollowupCount = FollowupData.Count() > 0 ? FollowupData.Where(n => n.MemberId == a.MemberID).Count() > 0 ? Followuptimes : null : null,
-                NextStepTask = NestStepTaskList.Count() > 0 ? NestStepTaskList.Where(n => n.MemberId == a.MemberID).Count() > 0 ? NestStepTaskList.Where(n => n.MemberId == a.MemberID).LastOrDefault().NewStatus : null : null
+                NextStepTask = NestStepTaskList.Count() > 0 ? NestStepTaskList.Where(n => n.MemberId == a.MemberID).Count() > 0 ? NestStepTaskList.Where(n => n.MemberId == a.MemberID).LastOrDefault().NewStatus : null : null,
+               // Action = "<a class='btn btn-warning' href='/Member/Workfollow?memberId=' " + a.MemberID + ">View</a>"
             });
             var FltData = FollowupDatefilter.Select(s => s.MemberId).ToList();
             //if (FollowupData.Count() > 0)
             data = data.Where(s => s.FollowupCount == Followuptimes).ToList();
             data = data.Where(s => s.NextStepTask == NextStepTask).ToList();
             if (FltData.Count > 0)
-            {   
+            {
                 data = data.Where(s => FltData.Contains(s.MemberID.Value)).ToList();
             }
 
+
+           
+
+            var recordsTotal= data.Count();
+
             if(data.Count() > 100) { data= data.Take(100); }
+            //if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
+            //{
+            //    data = data.OrderBy(sortColumn + " " + sortColumnDir);
+
+            //}
+            //Search    
+            //if (!string.IsNullOrEmpty(searchValue))
+            //{
+            //    data = data.Where(m => m.FirstName == searchValue);
+            //}
+            //data = data.Skip(start.GetValueOrDefault()).Take(length.GetValueOrDefault());
+            //var response = new { data = data, recordsFiltered = recordsTotal, recordsTotal = recordsTotal };
+            //return Json(response);
+            //return Json(new { data = obj });
 
             return Json(data);
         }
 
+        public class checkmodl
+        {
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public string MedicaidID { get; set; }
+            public string ResidentID { get; set; }
+            public string MembershipStatu { get; set; }
+            public string Language { get; set; }
+            public string RecertMonth { get; set; }
+            public string Facility { get; set; }
+            public string Action { get; set; }
+        }
 
         [HttpPost]
         public IActionResult MemberFilterExcel(string FromDate, string ToDate, string SearchbyName, string MedicaidID, string ResidenceID, string UserName, string Language, string MembershipStatus, string RecertMonth, string Followuptimes, string Facility, string NextStepTask, string Phone, string followupS, string followupE,int UserId)

@@ -1204,7 +1204,11 @@ namespace YSLProject.Controllers
                             if (p.PITName.Trim() == "PIT PENDING" || p.PITStatus.Trim() == "PIT PENDING") { p.PITStatus = "PENDING"; }
                             else if (p.PITStatus.Trim() == "PIT") { p.PITStatus = "APPROVED"; }
                             p.PITEffective = (dt.Columns.Contains("EffectiveDate") ? dr["EffectiveDate"].ToString() : null);
-                            p.PITNotes = (dt.Columns.Contains("Comments") ? dr["Comments"].ToString() : null);
+                            string Notes = "";
+                            Notes += (dt.Columns.Contains("Comments") ? dr["Comments"].ToString() : null);
+                            Notes += (dt.Columns.Contains("Comments2") ? dr["Comments2"].ToString() : null);
+                            p.PITNotes = Notes;
+
                             if (p.PITStatus.Trim() != "NO PIT")
                             {
                                 _context.PIT.Add(p);

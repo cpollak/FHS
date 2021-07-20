@@ -216,39 +216,34 @@
                             <thead>
                                 <tr>
                                     <th>
-                                        @Html.DisplayName("First Name")
+                                        First Name
                                     </th>
                                     <th>
-                                        @Html.DisplayName("Last Name")
-                                    </th>
-                                    @*<th>
-                                            @Html.DisplayName("Created Date")
-                                        </th>*@
-                                    <th>
-                                        @Html.DisplayName("MedicaidID")
+                                        Last Name
                                     </th>
                                     <th>
-                                        @Html.DisplayName("ResidenceID")
+                                        MedicaidID
                                     </th>
                                     <th>
-                                        @Html.DisplayName("Membership Status")
+                                        ResidenceID
                                     </th>
                                     <th>
-                                        @Html.DisplayName("Language")
+                                        Membership Status
                                     </th>
                                     <th>
-                                        @Html.DisplayName("RecertMonth")
+                                       Language
                                     </th>
                                     <th>
-                                        @Html.DisplayName("Facility")
+                                        RecertMonth
                                     </th>
-                                    @*<th>
-                                            @Html.DisplayName("Created by")
-                                        </th>*@
+                                    <th>
+                                        Facility
+                                    </th>
+                                    
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody id="tfbody">
+                            <tbody>
                             </tbody>
                         </table>
                     </div>
@@ -271,6 +266,7 @@
     <script>
         $(".desutj").css("display", "none");
         $(document).ready(function () {
+            debugger;
             let url = new URL(window.location.href);
             let search_params = url.searchParams;
             if (search_params.has('b')) {
@@ -279,7 +275,7 @@
             else {
                 $("#Followuptimes").val(null);
             }
-        $(".desutj").css("display", "block");
+       $(".desutj").css("display", "block");
         var FromDate = $("#FromDate").val();
         var ToDate = $("#ToDate").val();
         var SearchbyName = $("#SearchbyName").val();
@@ -295,6 +291,45 @@
             var Phone = $("#Phone").val();
             var followupS = $("#followupS").val();
             var followupE = $("#followupE").val();
+
+
+          
+            @*$('#example').DataTable({
+                processing: true,
+                "language": {
+                    "processing": "<div class='desutj'><div class='loader'></div></div>"
+                },
+                "filter": true,
+            serverSide: true,
+            searchable: true,
+            ajax: {
+                url: '@Url.Action("MemberFilter", "Dashboard")',
+                type: 'POST',
+                'data': {
+                    "FromDate": FromDate, "ToDate": ToDate, "SearchbyName": SearchbyName,
+                    "MedicaidID": MedicaidID, "ResidenceID": ResidenceID, "UserName": UserName,
+                    "Language": Language, "MembershipStatus": MembershipStatus, "RecertMonth": RecertMonth,
+                    "Followuptimes": Followuptimes, "Facility": Facility, "NextStepTask": NextStepTask,
+                    "Phone": Phone, "followupS": followupS, "followupE": followupE
+                },
+                //complete: function () {
+                //    $(".desutj").css("display", "none");
+                //},
+                "datatype": "json"
+                },
+                columns: [
+                    { data: "firstName", "name": "FirstName"},
+                    { data: "lastName", "name": "FirstName" },
+                    { data: "medicaidID" },
+                    { data: "residentID" },
+                    { data: "membershipStatu" },
+                    { data: "language" },
+                    { data: "recertMonth" },
+                    { data: "facility" },
+                    { data: "action" }
+                ]
+        });*@
+
         $.ajax({
             url: '@Url.Action("MemberFilter", "Dashboard")',
             type: "POST",
@@ -324,7 +359,7 @@
             error: function (Result) {
             }
         });
-        })
+     })
         $('#example').DataTable({
             'paging': true,
             'lengthChange': true,
@@ -339,6 +374,8 @@
             //    'orderable': false,
             //}]
         })
+
+       
 
         $("#UserName").text("Welcome " + '@ViewBag.UserName');
 
