@@ -18,7 +18,7 @@ namespace YSLProject.Table
 
         public String UserName { get; set; }
 
-        [Required(ErrorMessage = "Enter EmailId")]
+        //[Required(ErrorMessage = "Enter EmailId")]
         [Display(Name = "Email")]
         [DataType(DataType.EmailAddress)]
 

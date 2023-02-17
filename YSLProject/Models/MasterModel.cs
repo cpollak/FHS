@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -17,12 +18,32 @@ namespace YSLProject.Models
         [Required(ErrorMessage = "Last Name is required")]
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
+        public string Type { get; set; }
 
-        [Required(ErrorMessage = "Address is required")]
+        [Required(ErrorMessage = "MedicaidID is required")]
+        [Display(Name = "MedicaidID")]
+        public string MedicaidID { get; set; }
+
+        [Required(ErrorMessage = "ResidentID is required")]
+        [Display(Name = "ResidentID")]
+        public string ResidentID { get; set; }
+
+        public string MembershipStatu { get; set; }
+
+        [Display(Name = "Language")]
+        public string Language { get; set; }
+
+        public string RecertMonth { get; set; }
+
+        [Display(Name = "Facility")]
+        [Required(ErrorMessage = "Facility required")]
+        public string Facility { get; set; }
+
+        //[Required(ErrorMessage = "Address is required")]
         [Display(Name = "Address")]
         public string Address { get; set; }
 
-        [Required(ErrorMessage = "Primary Phone is required")]
+        //[Required(ErrorMessage = "Primary Phone is required")]
         [Display(Name = "Primary Phone")]
         public string PrimaryPhone { get; set; }
 
@@ -30,20 +51,18 @@ namespace YSLProject.Models
         public string Email { get; set; }
 
 
-        [Display(Name = "Language")]
-        public string Language { get; set; }
+        
+        public int LanguageId { get; set; }
 
-        [Required(ErrorMessage = "Country Code is required")]
+       
+
+        //[Required(ErrorMessage = "Country Code is required")]
         [Display(Name = "County Code")]
         public string CountyCode { get; set; }
 
-        [Required(ErrorMessage = "ResidentID is required")]
-        [Display(Name = "ResidentID")]
-        public string ResidentID { get; set; }
+       
 
-        [Required(ErrorMessage = "MedicaidID is required")]
-        [Display(Name = "MedicaidID")]
-        public string MedicaidID { get; set; }
+        
 
         [Required(ErrorMessage = "Enrollment Date is required")]
         [Display(Name = "Enrollment Date")]
@@ -54,9 +73,8 @@ namespace YSLProject.Models
         public string EnrollmentDa { get; set; }
         public string NewEnrollmentDa { get; set; }
 
-        [Required(ErrorMessage = "Facility required")]
-        [Display(Name = "Facility")]
-        public string Facility { get; set; }
+        
+        
 
         [Required(ErrorMessage = "Disenrolment Date is required")]
         [Display(Name = "Disenrolment Date")]
@@ -105,23 +123,29 @@ namespace YSLProject.Models
         public DateTime? CDate { get; set; }
         public DateTime? FollowUpDate { get; set; }
 
-        public string MembershipStatu { get; set; }
-        public string RecertMonth { get; set; }
+       
+       
         public string FollowupCount { get; set; }
         public string Followupdaterange { get; set; }
 
         public string ReportsType { get; set; }
 
         public string NextStepTask { get; set; }
+        public string Outcome { get; set; }
 
         [Display(Name = "Member Status")]
-        [Required(ErrorMessage = "Member Status is required")]
+        [Required, Range(1, int.MaxValue, ErrorMessage = "Member Status is required")]
         public int MemberStatus { get; set; }
 
         public string CurrentFacility { get; set; }
 
+        public string LostEligibilityDate { get; set; }
+        public string CphlComments { get; set; }
         public string Action { get; set; }
-
+        [Display(Name ="No Header")]
+        public bool IsNoHeader { get; set; }
+        public string CaseType { get; set; }
+        public string value { get; set; } 
         public List<Recertification_Follow_UpModel> Recertification_Follow_UpModels { get; set; }
         public List<ContactModel> contactModels { get; set; }
         public List<SpousalModel> SpousalModels { get; set; }
@@ -130,6 +154,8 @@ namespace YSLProject.Models
         public PITModel pITModel { get; set; }
         public List<PITUploadsModel> PITUploadsModel { get; set; }
         public List<GeneralNotesModel> GeneralNotesModel { get; set; }
+        public List<GeneralNotesModel> GeneralNotesModelOld { get; set; }
+
     }
 
     public class ContactModel
@@ -141,6 +167,8 @@ namespace YSLProject.Models
         [Required(ErrorMessage = "RelationShip is required")]
         [Display(Name = "RelationShip")]
         public int RelationShip { get; set; }
+        [NotMapped]
+        public string RelationShipstring { get; set; }
 
         [Display(Name = "Name")]
         public string Name { get; set; }
@@ -170,7 +198,9 @@ namespace YSLProject.Models
         [Display(Name = "MA")]
         public string MA { get; set; }
 
-        
+        public string ResidentId { get; set; }
+
+
     }
 
     public class Recertification_Follow_UpModel
@@ -188,7 +218,24 @@ namespace YSLProject.Models
         public DateTime CreatedDate { get; set; }
         public string CreatedDt { get; set; }
         public int CreatedBy { get; set; }
+        public string CreatedByName { get; set; }
         public DateTime Nextduedate { get; set; }
+        public string Action { get; set; }
+    }
+
+    public class Recertification_Follow_UpModel_ExcelExport
+    {
+        public int FollowUpID { get; set; }
+        public int MemberId { get; set; }
+        public string CurrentStatus { get; set; }
+        public string Outcome { get; set; }
+        public string Notes { get; set; }
+        public string NextStepTask { get; set; }
+        public string NewStatus { get; set; }
+        public string CreatedDt { get; set; }
+
+        public string Name { get; set; }
+        public string MedicaidId { get; set; }
     }
     public class LogsModel
     {
@@ -212,6 +259,7 @@ namespace YSLProject.Models
         public string PITName { get; set; }
         public string PITStatus { get; set; }
         public string PITEffective { get; set; }
+        public DateTime? PITEffectiveDt { get; set; }
         public string PITNotes { get; set; }
 
     }
@@ -228,11 +276,46 @@ namespace YSLProject.Models
         [Display(Name = "Notes")]
         public string Notes { get; set; }
 
+        [Display(Name = "FollowUp Date ")]
+        public Nullable<System.DateTime> FollowUpDate { get; set; }
         public DateTime? CreatedDate { get; set; }
         public string CreatedDat { get; set; }
 
         public int? CreatedBy { get; set; }
         public string CreatedBys { get; set; }
+    }
+
+    public class AuditTrail
+    {
+        [Key]
+        public int AuditId { get; set; }
+        public int NoteId { get; set; }
+        [Display(Name = "Reason For Delete")]
+        public string ReasonForDelete { get; set; }
+        public int DeleteBy { get; set; }
+        public DateTime DeletedOn { get; set; }
+
+        public string Type { get; set; }
+        public int MemberId { get; set; }
+    }
+
+    public class GeneralNotesExcelExport
+    {
+        public int? MemberId { get; set; }
+
+
+        [Display(Name = "Type")]
+        public string Type { get; set; }
+
+        [Display(Name = "Notes")]
+        public string Notes { get; set; }
+
+        public string CreatedDat { get; set; }
+
+        public string CreatedBys { get; set; }
+
+        public string Name { get; set; }
+        public string MedicaidID { get; set; }
     }
 
     public class PITUploadsModel
@@ -242,5 +325,13 @@ namespace YSLProject.Models
         public string FileName { get; set; }
        
 
+    }
+
+    public class NonCoveredExportExcel
+    {
+        public string MedicaidID { get; set; }
+        public string Name { get; set; }
+        public string LostEligibilityDate { get; set; }
+        public string CphlComments { get; set; }
     }
 }

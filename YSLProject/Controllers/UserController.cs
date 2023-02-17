@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +27,17 @@ namespace YSLProject.Controllers
         }
         public IActionResult Index()
         {
+
+            HttpContext.Session.SetString("followupS","");
+            HttpContext.Session.SetString("followupE", "");
+            HttpContext.Session.SetString("Phone", "");
+            HttpContext.Session.SetString("ResidenceID", "");
+            HttpContext.Session.SetString("MedicaidID", "");
+            HttpContext.Session.SetString("RecertMonth", "");
+            HttpContext.Session.SetString("Facility", "");
+            HttpContext.Session.SetString("Language", "");
+            HttpContext.Session.SetString("MembershipStatus", "");
+            HttpContext.Session.SetString("RecertMonth", "");
             DataTable dt = new DataTable();
             dt = new UserMasterBAL().GetUserList();
             List<UserMasterModel> UserList = new List<UserMasterModel>();
@@ -73,7 +85,7 @@ namespace YSLProject.Controllers
                 obj.Password = PasswordEncrypt.encrypt(obj.Password);
                 UserMaster objs = new UserMaster();
                 objs.UserName = obj.UserName;
-                objs.UserEmail = obj.UserEmail;
+                objs.UserEmail = obj.UserEmail == null ? "" : obj.UserEmail;
                 objs.Password = obj.Password;
                 objs.IsActive = obj.IsActive;
                 objs.LastLoginDate = DateTime.Now;
@@ -111,6 +123,7 @@ namespace YSLProject.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(UserMasterModel obj)
         {
+            ModelState.Remove("ConfirmPassword");
             if (ModelState.IsValid)
             {
                 UserMaster objs = new UserMaster();

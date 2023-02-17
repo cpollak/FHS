@@ -24,5 +24,16 @@ namespace YSLProject.Table
         public string PrimaryPhone { get; set; }
 
         public int? AssignId { get; set; }
+
+        public string InternalNotes { get; set; }
+        public string ExternalNotes { get; set; }
+        public DateTime? FollowCreatedDate { get; set; }
+        public string MembershipString { get; set; }
+        public string Languagestring { get; set; }
+        public string Outcome { get; set; }
+        public string NextStepTask { get; set; }
+        public string Type { get; set; }
+
+        public int RecordCount { get; set; }
     }
 }

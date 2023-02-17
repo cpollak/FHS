@@ -23,7 +23,9 @@ namespace YSLProject.Table
         [Display(Name = "MA")]
         public string MA { get; set; }
 
-       
-       
+        public int? SpousalMemberId { get; set; }
+
+
+
     }
 }

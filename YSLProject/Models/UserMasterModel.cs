@@ -15,7 +15,7 @@ namespace YSLProject.Models
 
         public String UserName { get; set; }
 
-        [Required(ErrorMessage = "Enter EmailId")]
+        //[Required(ErrorMessage = "Enter EmailId")]
         [Display(Name = "Email")]
         [DataType(DataType.EmailAddress)]
 
@@ -24,6 +24,11 @@ namespace YSLProject.Models
         [Required(ErrorMessage = "Enter Password")]
         [Display(Name = "Password")]
         public string Password { get; set; }
+
+        [Required(ErrorMessage = "Enter Confirm Password")]
+        [Display(Name = "Confirm Password")]
+        [Compare("Password",ErrorMessage = "Password doesn't match.")]
+        public string ConfirmPassword { get; set; }
 
         [Required(ErrorMessage = "Required")]
         [Display(Name = "IsActive")]

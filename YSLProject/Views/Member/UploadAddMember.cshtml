@@ -20,6 +20,7 @@
         margin-left: 54%;
         height: 90%;
     }
+  
 </style>
 <div class="desutj">
     <div class="loader"></div>
@@ -35,35 +36,53 @@
                 </div>*@
            
         <div class="form-group row">
-            <div class="col-md-2">
-                @Html.LabelFor(model => model.MemberStatus, htmlAttributes: new { @class = "control-label " })
-                @Html.DropDownListFor(model => model.MemberStatus, (IEnumerable<SelectListItem>)ViewBag.MemberStatusList, htmlAttributes: new { @class = "form-control" ,@onchange="ChangeMemberStatus()",@Id="ddlMemberStatus"})
-                @Html.ValidationMessageFor(model => model.MemberStatus, "", new { @class = "text-danger" })
+            <div class="col-md-1" style="text-align:center">
+                <label class="form-check-label">
+                    &nbsp;
+                    &nbsp;
+                    &nbsp;
+                    &nbsp;
+                    &nbsp;
+                    &nbsp;
+                    &nbsp;
+                    &nbsp;
+                    &nbsp;
+                    &nbsp;
+                    &nbsp;
+                </label>
+                    <label class="form-check-label" style="padding-top:15px;">
+                        <input class="form-check-input" asp-for="IsNoHeader" /> @Html.DisplayNameFor(model => model.IsNoHeader)
+                    </label>
             </div>
+                <div class="col-md-2">
+                    @Html.LabelFor(model => model.MemberStatus, htmlAttributes: new { @class = "control-label " })
+                    @Html.DropDownListFor(model => model.MemberStatus, (IEnumerable<SelectListItem>)ViewBag.MemberStatusList, htmlAttributes: new { @class = "form-control", @onchange = "ChangeMemberStatus()", @Id = "ddlMemberStatus" })
+                    @Html.ValidationMessageFor(model => model.MemberStatus, "", new { @class = "text-danger",@Id= "EMemberStatus" })
+                </div>
 
-            <div class="col-md-2" id="divFacility">
-                @Html.LabelFor(model => model.Facility, htmlAttributes: new { @class = "control-label " })
-                @Html.DropDownListFor(model => model.Facility, (IEnumerable<SelectListItem>)ViewBag.FacilityType, htmlAttributes: new { @class = "form-control" })
-            </div>
+                <div class="col-md-2" id="divFacility">
+                    @Html.LabelFor(model => model.Facility, htmlAttributes: new { @class = "control-label " })
+                    @Html.DropDownListFor(model => model.Facility, (IEnumerable<SelectListItem>)ViewBag.FacilityType, htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.MemberStatus, "", new { @class = "text-danger", @Id = "EFacility" })
+                </div>
 
-            <div class="col-md-2" id="divDate">
-                @Html.LabelFor(model => model.FollowUpDate, htmlAttributes: new { @class = "control-label " })
-                @Html.TextBoxFor(model => model.FollowUpDate, "{0:M/dd/yyyy}", new { @class = "form-control", @type = "date" })
-
+                <div class="col-md-2" id="divDate">
+                    @Html.LabelFor(model => model.FollowUpDate, htmlAttributes: new { @class = "control-label " })
+                    @Html.TextBoxFor(model => model.FollowUpDate, "{0:M/dd/yyyy}", new { @class = "form-control", @type = "date" })
+                </div>
+                <div class="col-md-3">
+                    <label class="control-label ">Upload File</label>
+                    <input type="file" name="postedFile" style="display: block;" required />
+                </div>
+                <div class="col-md-2">
+                    <label class="control-label ">&nbsp;</label>
+                    <input type="submit" value="Save" class="btn btn-primary sve" style="display: block;" />
+                </div>
             </div>
-            <div class="col-md-4">
-                <label class="control-label ">Upload File</label>
-                <input type="file" name="postedFile" style="display: block;" required />
-            </div>
-            <div class="col-md-2">
-                <label class="control-label ">&nbsp;</label>
-                <input type="submit" value="Save" class="btn btn-primary sve" style="display: block;" />
-            </div>
-        </div>
             <div class="form-group">
-                
+
             </div>
-        </form>
+</form>
     </div>
 </div>
 
@@ -76,10 +95,21 @@
 <script>
     $(".desutj").css("display", "none");
     $(".sve").click(function () {
-        $(".desutj").css("display", "block");
-        //if ($("form").valid() == false) {
-        //    return false;
-        //}
+        
+        var check = false;
+        if ($("#ddlMemberStatus").val() == 0) {
+            $("#EMemberStatus").text('Select Member Status..');
+            check = true;
+        }
+        if ($("#Facility").val() == '') {
+            $("#EFacility").text('Select Facility..');
+            check = true;
+        }
+        if (check == true)
+            return false;
+        if ($("#Facility").val() != '' && $("#MemberStatus").val() != 0) {
+            $(".desutj").css("display", "block");
+        }
     });
 
     //$(function () {
@@ -98,11 +128,11 @@
     function ChangeMemberStatus() {
         var status = $("#ddlMemberStatus").val();
         if (status == "1" || status == "2") {
-            $("#divFacility").css("display", "inline")
+            /*$("#divFacility").css("display", "inline")*/
             $("#divDate").css("display", "inline")
         }
         else {
-            $("#divFacility").css("display", "none")
+            /*$("#divFacility").css("display", "none")*/
             $("#divDate").css("display", "none")
         }
     }

@@ -22,13 +22,13 @@ namespace YSLProject.Models
 
         public int CreatedBy { get; set; }
 
-
+        public bool CurrentStatusFlg { get; set; }
 
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
         public Nullable<System.DateTime> Nextduedate { get; set; }
 
-
+        public int? MembershipStatus  { get; set; }
         public List<RecertificationFollowUpList> recertificLists { get; set; }
 
     }

@@ -32,7 +32,7 @@ namespace YSLProject
 
             services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromSeconds(900);
+                options.IdleTimeout = TimeSpan.FromHours(1);
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });

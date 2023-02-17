@@ -6,6 +6,7 @@
 @*<h1 id="UserName">'@ViewBag.UserName'</h1>*@
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.24/datatables.min.css" />
 <link href="~/css/loders.css" rel="stylesheet" />
+
 <style>
 
     * {
@@ -112,66 +113,100 @@
         padding-left: 5px;
     }
 </style>
-<div class="desutj">
-    <div class="loader"></div>
-</div>
+<div class="desutj" style="display:none">
+        <div class="loader"></div>
+    </div>
 
 <div class="header">
+    <div class="col-2">
+    </div>
+    <div class="col-10">
+        <div class="form-group row">
 
-    <div class="form-group row">
-        <div class="col-md-1">
+            @*<div class="col-md-2">
+                    <label>Search by Member Name </label>
+                    <input type="text" class="form-control" id="SearchbyName" placeholder="Search by name" />
+                </div>*@
+            <div class="col-md-2">
+                <label>Medicaid ID</label>
+                <input type="text" class="form-control" id="MedicaidID" placeholder="MedicaidID" value="@ViewBag.MedicaidID" />
+            </div>
+            <div class="col-md-2">
+                <label>Residence ID</label>
+                <input type="text" class="form-control" id="ResidenceID" placeholder="ResidenceID" value="@ViewBag.ResidenceID" />
+            </div>
 
-        </div>
-        <div class="col-md-2">
-            <label>Search by Member Name </label>
-            <input type="text" class="form-control" id="SearchbyName" placeholder="Search by name" />
-        </div>
-        <div class="col-md-2">
-            <label>Medicaid ID</label>
-            <input type="text" class="form-control" id="MedicaidID" placeholder="MedicaidID" />
-        </div>
-        <div class="col-md-2">
-            <label>Residence ID</label>
-            <input type="text" class="form-control" id="ResidenceID" placeholder="ResidenceID" />
-        </div>
+            <div class="col-md-2">
+                <label>Facility</label>
+                @Html.DropDownList("Facility", (IEnumerable<SelectListItem>)ViewBag.FacilityList, htmlAttributes: new { @class = "form-control" })
 
-        <div class="col-md-2">
-            <label>Facility</label>
-            @Html.DropDownList("Facility", (IEnumerable<SelectListItem>)ViewBag.FacilityList, htmlAttributes: new { @class = "form-control" })
+            </div>
+            <div class="col-md-2">
+                <label>Status</label>
+                @Html.DropDownList("NextStepTask", (IEnumerable<SelectListItem>)ViewBag.FollowupStatusList, htmlAttributes: new { @class = "form-control" })
+            </div>
+            <div class="col-md-4">
+                <label>&nbsp;</label><br />
+                <input type="button" id="Filter" value="Filter" class="btn btn-primary" />
+                @if (ViewBag.UserTypeId != "1")
+                {
+                    <input type="button" id="FilterAssigned" value="View Assigned" class="btn btn-secondary" />
+                }
+                <button onclick="ExporttoExcel()" title="Export to Excel" class="btn btn-success">Export to Excel</button>
+                <button onclick="clearFilter()" title="Export to Excel" class="btn btn-danger">Clear Filter</button>
+            </div>
 
-        </div>
-        <div class="col-md-2">
-            <label>Status</label>
-            @Html.DropDownList("NextStepTask", (IEnumerable<SelectListItem>)ViewBag.FollowupStatusList, htmlAttributes: new { @class = "form-control" })
-        </div>
-        <div class="col-md-1">
-            <label>&nbsp;</label><br />
-            <input type="button" id="Filter" value="Filter" class="btn btn-primary" />
 
         </div>
     </div>
-    <div class="form-group row">
-        <div class="col-md-1">
+    <div class="col-2">
+    </div>
+    <div class="col-10">
+        <div class="form-group row">
+            <div class="col-md-2">
+                <label>
+                    First Initials of Last Name:
+                </label>
+                <input type="text" class="form-control" id="FirstIniLastName" placeholder="Search By Initials" value="@ViewBag.FirstIniLastName" />
+            </div>
+            <div class="col-md-2">
+                <label>
+                    Followup Start:
+                </label>
+                <input type="date" data-date-format="MM/dd/yyyy" id="followupS" class="form-control" value="@ViewBag.followupS" />
+            </div>
 
-        </div>
-        <div class="col-md-3">
-            Followup Start:
-            <input type="date" data-date-format="MM/dd/yyyy" id="followupS" class="form-control" />
-        </div>
+            <div class="col-md-2">
+                <label> Followup End :</label>
+                <input type="date" data-date-format="MM/dd/yyyy" id="followupE" class="form-control" value="@ViewBag.followupE" />
+            </div>
 
-        <div class="col-md-3">
-            Followup End :
-            <input type="date" data-date-format="MM/dd/yyyy" id="followupE" class="form-control" />
-        </div>
-        <div class="col-md-3">
+            <div class="col-md-2">
+                <label style="text-align:center"> Exclude Disenrolled</label>
+                <div>
+                    <input style="margin-left:-45px;" type="checkbox" class="form-control" id="chkExcludeDisenrolled" checked />
+                </div>
+            </div>
+             <div class="col-md-2">
+                <label style="text-align:center"> Recertification Process</label>
+                <div>
+                    <input style="margin-left:-45px;" type="checkbox" class="form-control" id="RecertificationProcess"  />
+                </div>
+            </div>
+             <div class="col-md-2">
+                <label style="text-align:center"> Firstcall</label>
+                <div>
+                    <input style="margin-left:-79px;" type="checkbox" class="form-control" id="Firstcall"  />
+                </div>
+            </div>
 
-        </div>
-        <div class="col-md-2">
-            <label style="font-weight:bold">&nbsp;</label><br />
-            <button style="float:right;" onclick="ExporttoExcel()" title="Export to Excel" class="btn btn-primary">Export to Excel</button>
+
+            <div class="col-md-2">
+                @*<label style="font-weight:bold">&nbsp;</label><br />
+            <button onclick="ExporttoExcel()" title="Export to Excel" class="btn btn-primary">Export to Excel</button>*@
+            </div>
         </div>
     </div>
-
 </div>
 
 <div class="row">
@@ -198,9 +233,17 @@
 
                 @*<input type="number" id="Followuptimes" min="1" oninput="this.value = Math.abs(this.value)" class="form-control" placeholder="Follow-up times" />*@
             </li>
+             <li>
+                <label>Type</label>
+                @Html.DropDownList("Type", (IEnumerable<SelectListItem>)ViewBag.TypeList, htmlAttributes: new { @class = "form-control" })
+            </li>
+            <li>
+                <label>Case Type</label>
+                @Html.DropDownList("CaseType", (IEnumerable<SelectListItem>)ViewBag.CaseType, htmlAttributes: new { @class = "form-control" })
+            </li>
             <li>
                 <label>Phone</label>
-                <input type="text" class="form-control" id="Phone" placeholder="Phone" />
+                <input type="text" class="form-control" id="Phone" placeholder="Phone" value="@ViewBag.Phone" />
             </li>
 
         </ul>
@@ -222,16 +265,21 @@
                                         Last Name
                                     </th>
                                     <th>
+                                        Type
+                                    </th>
+                                    <th>
                                         MedicaidID
                                     </th>
                                     <th>
                                         ResidenceID
                                     </th>
+                                    <th>Outcome</th>
+                                    <th>NextStepTask</th>
                                     <th>
                                         Membership Status
                                     </th>
                                     <th>
-                                       Language
+                                        Language
                                     </th>
                                     <th>
                                         RecertMonth
@@ -239,7 +287,7 @@
                                     <th>
                                         Facility
                                     </th>
-                                    
+
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -253,7 +301,98 @@
 
     </div>
 </div>
+<div class="modal fade text-left" id="default" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" style="margin-top:10px;">
+            <div class="modal-header bg-info white">
+                <h4 class="modal-title white" id="myModalLabel1">Notes</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div style="color: #3A44E1;font-size:large;text-align:left;padding:0" class="col-md-12">
+                    <b>
+                        Follow Up List
+                    </b>
+                    <hr />
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered " id="tblFollowupNotes" style="max-height:200px;">
+                        <thead>
+                            <tr>
+                                <th>Current Status</th>
+                                <th>Out Come</th>
+                                <th>Notes</th>
+                                <th>Next StepTask</th>
+                                <th>New Status</th>
+                                <th>Created date</th>
+                                <th>Created By</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    <div style="color: #3A44E1;font-size:large">
+                        <b>
+                            General Notes
+                        </b>
+                        <hr />
+                    </div>
+                    <table class="table table-striped table-bordered " id="tblNotes">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Type
+                                </th>
+                                <th>
+                                    Notes
+                                </th>
+                                <th>
+                                    Date
+                                </th>
+                                <th>
+                                    Created By
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    <div style="color: #3A44E1;font-size:large">
+                        <b>
+                            Old Notes
+                        </b>
+                        <hr />
+                    </div>
+                    <table class="table table-striped table-bordered " id="tblOldNotes">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Type
+                                </th>
+                                <th>
+                                    Notes
+                                </th>
+                                <th>
+                                    Date
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
 
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn grey btn-outline-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+	 	 	 	 	 	 	 	 
 @section Scripts {
 
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");
@@ -264,44 +403,62 @@
     <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
 
     <script>
-        $(".desutj").css("display", "none");
-        $(document).ready(function () {
-            debugger;
-            let url = new URL(window.location.href);
-            let search_params = url.searchParams;
-            if (search_params.has('b')) {
-                SetPreviousValue();
-            }
-            else {
-                $("#Followuptimes").val(null);
-            }
-       $(".desutj").css("display", "block");
-        var FromDate = $("#FromDate").val();
-        var ToDate = $("#ToDate").val();
-        var SearchbyName = $("#SearchbyName").val();
-        var MedicaidID = $("#MedicaidID").val();
-        var ResidenceID = $("#ResidenceID").val();
-        var UserName = $("#UserName").val();
-        var Language = $("#Language").val();
-        var RecertMonth = $("#RecertMonth").val();
-        var MembershipStatus = $("#MembershipStatus").val();
-        var Followuptimes = $("#Followuptimes").val();
-        var Facility = $("#Facility").val();
-        var NextStepTask = $("#NextStepTask").val();
+
+        function getMemeberList(iii) {
+            //let url = new URL(window.location.href);
+            //let search_params = url.searchParams;
+            //if (search_params.has('b')) {
+            //    SetPreviousValue();
+            //}
+            //else {
+            //    $("#Followuptimes").val(null);
+            //}
+            
+            var FromDate = $("#followupS").val();
+            var ToDate = $("#followupE").val();
+            var SearchbyName = $("#SearchbyName").val();
+            var MedicaidID = $("#MedicaidID").val();
+            var ResidenceID = $("#ResidenceID").val();
+            var UserName = $("#UserName").val();
+            var Language = $("#Language").val();
+            var RecertMonth = $("#RecertMonth").val();
+            var MembershipStatus = $("#MembershipStatus").val();
+            var Followuptimes = $("#Followuptimes").val();
+            var Facility = $("#Facility").val();
+            
+            var NextStepTask = $("#NextStepTask").val();
             var Phone = $("#Phone").val();
             var followupS = $("#followupS").val();
             var followupE = $("#followupE").val();
+            var FirstIniLastName = $("#FirstIniLastName").val();
+            debugger;
+             var Type = $("#Type").val();
+            var CaseType = $("#CaseType").val();
+            var chkExcludeDisenrolled = false;
+            if ($('#chkExcludeDisenrolled').is(':checked')) {
+                chkExcludeDisenrolled = true;
+            }
+            
+            var RecertificationProcess = false;
+            if ($('#RecertificationProcess').is(':checked')) {
+                RecertificationProcess = true;
+            }
 
-
-          
-            @*$('#example').DataTable({
+            Firstcall
+             var Firstcall = false;
+            if ($('#Firstcall').is(':checked')) {
+                Firstcall = true;
+            }
+            $('#example').DataTable({
                 processing: true,
-                "language": {
-                    "processing": "<div class='desutj'><div class='loader'></div></div>"
-                },
-                "filter": true,
+                //'language': {
+                //    'loadingRecords': '&nbsp;',
+                //    'processing': '<div class="desutj"><div class="loader"></div> </div>'
+                //}   ,
             serverSide: true,
-            searchable: true,
+                searchable: true,
+                destroy: true,
+                "order": [[0, "desc"]],
             ajax: {
                 url: '@Url.Action("MemberFilter", "Dashboard")',
                 type: 'POST',
@@ -310,166 +467,71 @@
                     "MedicaidID": MedicaidID, "ResidenceID": ResidenceID, "UserName": UserName,
                     "Language": Language, "MembershipStatus": MembershipStatus, "RecertMonth": RecertMonth,
                     "Followuptimes": Followuptimes, "Facility": Facility, "NextStepTask": NextStepTask,
-                    "Phone": Phone, "followupS": followupS, "followupE": followupE
+                    "Phone": Phone, "followupS": followupS, "followupE": followupE, "chkExcludeDisenrolled": chkExcludeDisenrolled, "AssignedFlg": iii, "FirstIniLastName": FirstIniLastName,"RecertificationProcess" : RecertificationProcess,"Firstcall":Firstcall,"Type":Type,"CaseType":CaseType
                 },
-                //complete: function () {
-                //    $(".desutj").css("display", "none");
-                //},
                 "datatype": "json"
                 },
                 columns: [
                     { data: "firstName", "name": "FirstName"},
-                    { data: "lastName", "name": "FirstName" },
-                    { data: "medicaidID" },
-                    { data: "residentID" },
-                    { data: "membershipStatu" },
-                    { data: "language" },
-                    { data: "recertMonth" },
-                    { data: "facility" },
+                    { data: "lastName", "name": "LastName" },
+                    { data: "type", "name": "Type" },
+                    { data: "medicaidID", "name": "MedicaidID" },
+                    { data: "residentID", "name": "ResidentID" },
+                    { data: "outcome", "name": "Outcome" },
+                    { data: "nextStepTask", "name": "NextStepTask" },
+                    { data: "membershipStatu", "name": "MembershipStatu" },
+                    { data: "language", "name": "Language" },
+                    { data: "recertMonth", "name": "RecertMonth" },
+                    { data: "facility", "name": "Facility" },
                     { data: "action" }
                 ]
-        });*@
+            });
+        }
 
-        $.ajax({
-            url: '@Url.Action("MemberFilter", "Dashboard")',
-            type: "POST",
-            data: {
-                "FromDate": FromDate, "ToDate": ToDate, "SearchbyName": SearchbyName,
-                "MedicaidID": MedicaidID, "ResidenceID": ResidenceID, "UserName": UserName,
-                "Language": Language, "MembershipStatus": MembershipStatus, "RecertMonth": RecertMonth,
-                "Followuptimes": Followuptimes, "Facility": Facility, "NextStepTask": NextStepTask,
-                "Phone": Phone ,"followupS": followupS, "followupE": followupE
-            },
-            success: function (data) {
-
-                $("#tfbody").html("");
-                var thtml = "";
-                if (data == "notDone") {
-                    var table = $('#example').DataTable();
-                    table.clear().draw();
-                    $(".desutj").css("display", "none");
-                }
-                else {
-                    myJsonData = data;
-                    populateDataTable(myJsonData);
-
-                    $(".desutj").css("display", "none");
-                }
-            },
-            error: function (Result) {
-            }
-        });
-     })
-        $('#example').DataTable({
-            'paging': true,
-            'lengthChange': true,
-            'searching': true,
-            "order": [],
-            'info': true,
-            'autoWidth': true,
-            "deferRender": true,
-
-            //'columnDefs': [{
-            //    'targets': [4],
-            //    'orderable': false,
-            //}]
+        $(document).ready(function () {
+            getMemeberList();
         })
-
-       
 
         $("#UserName").text("Welcome " + '@ViewBag.UserName');
 
         $("#Filter").click(function () {
-
-            $(".desutj").css("display", "block");
-        var FromDate = $("#FromDate").val();
-        var ToDate = $("#ToDate").val();
-        var SearchbyName = $("#SearchbyName").val();
-        var MedicaidID = $("#MedicaidID").val();
-        var ResidenceID = $("#ResidenceID").val();
-        var UserName = $("#UserName").val();
-        var Language = $("#Language").val();
-        var RecertMonth = $("#RecertMonth").val();
-        var MembershipStatus = $("#MembershipStatus").val();
-            var Followuptimes = $("#Followuptimes").val();
-            var Facility = $("#Facility").val();
-            var NextStepTask = $("#NextStepTask").val();
-            var Phone = $("#Phone").val();
+            debugger;
             var followupS = $("#followupS").val();
             var followupE = $("#followupE").val();
-        $.ajax({
-            url: '@Url.Action("MemberFilter", "Dashboard")',
-            type: "POST",
-            data: {
-                "FromDate": FromDate, "ToDate": ToDate, "SearchbyName": SearchbyName,
-                "MedicaidID": MedicaidID, "ResidenceID": ResidenceID, "UserName": UserName,
-                "Language": Language, "MembershipStatus": MembershipStatus, "RecertMonth": RecertMonth,
-                "Followuptimes": Followuptimes, "Facility": Facility, "NextStepTask": NextStepTask,
-                "Phone": Phone, "followupS": followupS, "followupE": followupE
-            },
-            success: function (data) {
-                $("#tfbody").html("");
-                var thtml = "";
-                if (data == "notDone") {
-                    var table = $('#example').DataTable();
-                    table.clear().draw();
-                    $(".desutj").css("display", "none");
-                }
-                else {
-                    myJsonData = data;
-                    populateDataTable(myJsonData);
-                    //var parsed = $.parseJSON(data);
-                    //var parsed = JSON.stringify(data);
-                    //$.each(data, function (index, value) {
-                    //    //thtml += "<tr>";
-                    //    //thtml += "<td class='th-sm'>" + value.firstName + " ";
-                    //    //thtml += "</td>";
-                    //    //thtml += "<td class='th-sm'>" + value.lastName + " ";
-                    //    //thtml += "</td>";
-                    //    //thtml += "<td class='th-sm'>" + value.createdDate + " ";
-                    //    //thtml += "</td>";
-                    //    //thtml += "<td class='th-sm'>" + value.medicaidID + " ";
-                    //    //thtml += "</td>";
-                    //    //thtml += "<td class='th-sm'>" + value.residentID + " ";
-                    //    //thtml += "</td>";
-                    //    //thtml += "<td class='th-sm'>" + value.membershipStatu + " ";
-                    //    //thtml += "</td>";
-                    //    //thtml += "<td class='th-sm'>" + value.language + " ";
-                    //    //thtml += "</td>";
-                    //    //thtml += "<td class='th-sm'>" + value.createdUser + " ";
-                    //    //thtml += "</td>";
-                    //    //thtml += "</tr>";
-
-                    //})
-                    //$("#tfbody").append(thtml);
-                    $(".desutj").css("display", "none");
-                }
-            },
-            error: function (Result) {
+            var isDate=true;
+            var isDateMesg="";
+            if(followupS == "" && followupE =="")
+            {
             }
-        });
-    })
-        function populateDataTable(data) {
-            $("#example").DataTable().clear();
-            $.each(data, function (index, value) {
-                $('#example').dataTable().fnAddData([
-                    (value.firstName == null ? "" : value.firstName),
-                    (value.lastName == null ? "" : value.lastName),
-                    //(value.createdDate == null ? "" : value.createdDate),
-                    (value.medicaidID == null ? "" : value.medicaidID),
-                    (value.residentID == null ? "" : value.residentID),
-                    (value.membershipStatu == null ? "" : value.membershipStatu),
-                    (value.language == null ? "" : value.language),
-                    (value.recertMonth == null ? "" : value.recertMonth),
-                    (value.facility == null ? "" : value.facility),
-                    '<a class="btn btn-warning" href="/Member/Workfollow?memberId=' + value.memberID + '">View</a>'
-                ]);
-            })
-        }
-
-
+            else{
+                if(followupS == "")
+                {
+                    isDate=false;
+                    isDateMesg ="Select StartDate";
+                }
+                if(followupE == "")
+                {
+                    isDate=false;
+                    if(isDateMesg !="")
+                        isDateMesg +=" & EndDate";
+                    else
+                        isDateMesg +="Select EndDate";
+                        isDate=false;
+                }
+            }
+            if(isDate == false)
+            {
+                alert(isDateMesg);
+                return false;
+            }
+            getMemeberList();
+        })
+        $("#FilterAssigned").click(function () {
+            getMemeberList(1);
+        })
 
         $(window).on('beforeunload', function () {
+           
             var FromDate = $("#FromDate").val();
             var ToDate = $("#ToDate").val();
             var SearchbyName = $("#SearchbyName").val();
@@ -505,6 +567,7 @@
         });
 
         function SetPreviousValue() {
+           
             if (localStorage.getItem("FromDate") != null)
                 $("#FromDate").val(localStorage.getItem("FromDate") );
             if (localStorage.getItem("ToDate") != null)
@@ -538,22 +601,57 @@
         }
 
         function ExporttoExcel() {
-             $(".desutj").css("display", "block");
-        var FromDate = $("#FromDate").val();
-        var ToDate = $("#ToDate").val();
-        var SearchbyName = $("#SearchbyName").val();
-        var MedicaidID = $("#MedicaidID").val();
-        var ResidenceID = $("#ResidenceID").val();
-        var UserName = $("#UserName").val();
-        var Language = $("#Language").val();
-        var RecertMonth = $("#RecertMonth").val();
-        var MembershipStatus = $("#MembershipStatus").val();
+           
+            $(".desutj").attr("style", "display:block");
+        //var FromDate = $("#FromDate").val();
+        //var ToDate = $("#ToDate").val();
+        //var SearchbyName = $("#SearchbyName").val();
+        //var MedicaidID = $("#MedicaidID").val();
+        //var ResidenceID = $("#ResidenceID").val();
+        //var UserName = $("#UserName").val();
+        //var Language = $("#Language").val();
+        //var RecertMonth = $("#RecertMonth").val();
+        //var MembershipStatus = $("#MembershipStatus").val();
+        //    var Followuptimes = $("#Followuptimes").val();
+        //    var Facility = $("#Facility").val();
+        //    var NextStepTask = $("#NextStepTask").val();
+        //    var Phone = $("#Phone").val();
+        //    var followupS = $("#followupS").val();
+        //    var followupE = $("#followupE").val();
+
+            var FromDate = $("#followupS").val();
+            var ToDate = $("#followupE").val();
+            var SearchbyName = $("#SearchbyName").val();
+            var MedicaidID = $("#MedicaidID").val();
+            var ResidenceID = $("#ResidenceID").val();
+            var UserName = $("#UserName").val();
+            var Language = $("#Language").val();
+            var RecertMonth = $("#RecertMonth").val();
+            var MembershipStatus = $("#MembershipStatus").val();
             var Followuptimes = $("#Followuptimes").val();
             var Facility = $("#Facility").val();
+            
             var NextStepTask = $("#NextStepTask").val();
             var Phone = $("#Phone").val();
             var followupS = $("#followupS").val();
             var followupE = $("#followupE").val();
+            var FirstIniLastName = $("#FirstIniLastName").val();
+            var Type = $("#Type").val();
+            var CaseType = $("#CaseType").val();
+            var chkExcludeDisenrolled = false;
+            if ($('#chkExcludeDisenrolled').is(':checked')) {
+                chkExcludeDisenrolled = true;
+            }
+
+            var RecertificationProcess = false;
+            if ($('#RecertificationProcess').is(':checked')) {
+                RecertificationProcess = true;
+            }
+
+             var Firstcall = false;
+            if ($('#Firstcall').is(':checked')) {
+                Firstcall = true;
+            }
         $.ajax({
             url: '@Url.Action("MemberFilterExcel", "Dashboard")',
             type: "POST",
@@ -562,10 +660,9 @@
                 "MedicaidID": MedicaidID, "ResidenceID": ResidenceID, "UserName": UserName,
                 "Language": Language, "MembershipStatus": MembershipStatus, "RecertMonth": RecertMonth,
                 "Followuptimes": Followuptimes, "Facility": Facility, "NextStepTask": NextStepTask,
-                "Phone": Phone, "followupS": followupS, "followupE": followupE
+                "Phone": Phone, "followupS": followupS, "followupE": followupE, "chkExcludeDisenrolled": chkExcludeDisenrolled, "AssignedFlg": 1, "FirstIniLastName": FirstIniLastName,"RecertificationProcess":RecertificationProcess,"Firstcall":Firstcall,"Type": Type,"CaseType":CaseType
             },
             success: function (data) {
-                debugger;
                 var bytes = Base64ToBytes(data.fileContents);
                 //var bytes = new Uint8Array(data);
                 var blob = new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
@@ -574,13 +671,132 @@
                 link.download = "Member.xlsx";
                 link.click();
 
-                $(".desutj").css("display", "none");
+                $(".desutj").attr("style", "display:none");
             },
             error: function (Result) {
+                $(".desutj").attr("style", "display:none");
             }
         });
         }
 
+
+        function clearFilter() {
+            window.location.href = "@Url.RouteUrl(new{ Controller = "Dashboard", Action = "clearFilter" })";
+
+        }
+function LoadModule(MemberId) {
+        //var QBId = $('#QBFieldMappingID').text();
+
+     $.ajax({
+            url: '@Url.Action("getFollowupList")',
+            type: "GET",
+            data: { "id": MemberId},
+            "success": function (response) {
+                
+                if (response.length > 0) {
+                    var table1 = $('#tblFollowupNotes').DataTable();
+                    table1.clear().draw();
+                    myJsonData = response;
+                    populateFollowupDataTable(myJsonData);
+                }
+                else {
+                    var table1 = $('#tblFollowupNotes').DataTable();
+                    table1.clear().draw();
+                }
+            },
+        });
+        $.ajax({
+            url: '@Url.Action("getNoteList")',
+            type: "GET",
+            data: { "id": MemberId},
+            "success": function (response) {
+               
+                if (response.length > 0) {
+                    var table1 = $('#tblNotes').DataTable();
+                    table1.clear().draw();
+                    myJsonData = response;
+                    populateDataTable(myJsonData);
+                }
+                else {
+                    var table1 = $('#tblNotes').DataTable();
+                    table1.clear().draw();
+                }
+            },
+        });
+     $.ajax({
+            url: '@Url.Action("getOldNoteList")',
+            type: "GET",
+            data: { "id": MemberId},
+            "success": function (response) {
+               
+                if (response.length > 0) {
+                    var table1 = $('#tblOldNotes').DataTable();
+                    table1.clear().draw();
+                    myJsonData = response;
+                    populateOldDataTable(myJsonData);
+                }
+                else {
+                    var table1 = $('#tblOldNotes').DataTable();
+                    table1.clear().draw();
+                }
+            },
+        });
+        }
+        function populateFollowupDataTable(data) {
+            
+            var string11 = JSON.stringify(data);
+            var parsed1 = JSON.parse(string11);
+            $.each(parsed1, function (index, value) {
+                $('#tblFollowupNotes').dataTable().fnAddData([
+                    (value.currentStatus == null ? "" : value.currentStatus),
+                    (value.outcome == null ? "" : value.outcome),
+                    (value.notes == null ? "" : value.notes),
+                    (value.nextStepTask == null ? "" : value.nextStepTask),
+                    (value.newStatus == null ? "" : value.newStatus),
+                    (value.createdDt == null ? "" : value.createdDt),
+                    (value.createdByName == null ? "" : value.createdByName)
+                ]);
+            })
+        }
+        //function populateDataTableworkflow(data) {
+        //    $("#exampleworkflow").DataTable().clear();
+        //    $.each(data, function (index, value) {
+
+        //        $('#exampleworkflow').dataTable().fnAddData([
+        //            (value.currentStatus == null ? "" : value.currentStatus),
+        //            (value.outcome == null ? "" : value.outcome),
+        //            (value.notes == null ? "" : value.notes),
+        //            (value.nextStepTask == null ? "" : value.nextStepTask),
+        //            (value.newStatus == null ? "" : value.newStatus),
+        //            (value.createdDt == null ? "" : value.createdDt)
+        //        ]);
+        //    })
+        //}
+        function populateDataTable(data) {
+            
+            var string11 = JSON.stringify(data);
+            var parsed1 = JSON.parse(string11);
+            $.each(parsed1, function (index, value) {
+                $('#tblNotes').dataTable().fnAddData([
+                    value.type,
+                    value.notes,
+                    value.createdBys,
+                    value.createdDat,
+                ]);
+            })
+        }
+        function populateOldDataTable(data) {
+            
+            var string11 = JSON.stringify(data);
+            var parsed1 = JSON.parse(string11);
+            $.each(parsed1, function (index, value) {
+                $('#tblOldNotes').dataTable().fnAddData([
+                    value.type,
+                    value.notes,
+                    value.createdDat,
+                ]);
+            })
+        }
         function Base64ToBytes(base64) {
             var s = window.atob(base64);
             var bytes = new Uint8Array(s.length);

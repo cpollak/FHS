@@ -20,12 +20,16 @@ namespace YSLProject.Table
         [Display(Name = "Notes")]
         public string Notes { get; set; }
 
+        [Display(Name = "FollowUp Date")]
+        public DateTime? FollowUpDate { get; set; }
+
         [Display(Name = "CreatedDate")]
         public DateTime CreatedDate { get; set; }
 
         [Display(Name = "CreatedBy")]
         public int? CreatedBy { get; set; }
 
-       
+        public bool IsDeleted { get; set; }
+
     }
 }

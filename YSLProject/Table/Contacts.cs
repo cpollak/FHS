@@ -29,5 +29,6 @@ namespace YSLProject.Table
         [Display(Name = "Address")]
         public string Address { get; set; }
 
+
     }
 }

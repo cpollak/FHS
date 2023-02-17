@@ -30,7 +30,12 @@
                 </div>*@
            
         <div class="form-group row">
-            
+
+            <div class="col-md-2" id="divFacility">
+                @Html.LabelFor(model => model.Facility, htmlAttributes: new { @class = "control-label " })
+                @Html.DropDownListFor(model => model.Facility, (IEnumerable<SelectListItem>)ViewBag.FacilityType, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.MemberStatus, "", new { @class = "text-danger", @Id = "EFacility" })
+            </div>
             <div class="col-md-4">
                 <label class="control-label ">Upload File</label>
                 <input type="file" name="postedFile" style="display: block;" required />
@@ -54,7 +59,20 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
 <script>
+    $(".sve").click(function () {
+       
+        var check = false;
 
+        if ($("#Facility").val() == '') {
+            $("#EFacility").text('Select Facility..');
+            check = true;
+        }
+        if (check == true)
+            return false;
+        if ($("#Facility").val() != '') {
+            $(".desutj").css("display", "block");
+        }
+    });
     //$(".sve").click(function () {
     //    debugger;
     //    if ($("form").valid() == false) {

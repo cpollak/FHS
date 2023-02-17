@@ -1,0 +1,315 @@
+﻿@model IEnumerable<YSLProject.Table.CenterReportModel>
+
+
+
+
+@{
+    ViewData["Title"] = "Index";
+}
+<style>
+    .btn-warning, .btn-danger {
+        padding: 3px 1rem;
+    }
+</style>
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.24/datatables.min.css" />
+<link href="~/css/loders.css" rel="stylesheet" />
+
+<div class="desutj">
+    <div class="loader"></div>
+</div>
+<div class="form-group row">
+    <div class="col-md-6">
+        <h1>Center Report</h1>
+    </div>
+    <div class="col-md-6" style="text-align:end;">
+        @*<a class="btn btn-primary" asp-area="" asp-controller="Member" asp-action="AddMember">Add New</a>*@
+    </div>
+</div>
+@*<p>
+    <a asp-action="AddMember">Create New</a>
+    </p>*@
+<div class="form-group row">
+    <div class="col-md-8">
+        </div>
+    <div class="col-md-2" style="text-align:right">
+        <label style="float: left;">Certification Month</label>
+        <select id="multiple-select" multiple class="select2 form-control monthselect"  onchange="getSelectedOptions(this)">
+                       <option value="1">Jan</option>
+                      <option value="2">Feb</option>
+                      <option value="3">Mar</option>
+                      <option value="4">Apr</option>
+                      <option value="5">May</option>
+                      <option value="6">Jun</option>
+                      <option value="7">Jul</option>
+                      <option value="8">Agu</option>
+                      <option value="9">Sep</option>
+                      <option value="10">Oct</option>
+                      <option value="11">Nov</option>
+                      <option value="12">Dec</option>
+    </select>
+        
+    </div>
+    <div class="col-md-2" style="text-align:right">
+        @*<label style="font-weight:bold">&nbsp;</label><br />*@
+        <button style="width:200px;" onclick="ExporttoExcel(2)" title="Export to Excel" class="btn btn-primary">Export to Excel</button>
+    </div>
+</div>
+<div>
+    &nbsp;
+</div>
+<div class="card">
+    <div class="card-content collapse show">
+        <div class="card-body card-dashboard dataTables_wrapper dt-bootstrap">
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered" id="example" style="width:100%">
+                    <thead>
+                        <tr>
+
+                            <th>PLAN</th>
+                            <th>County</th>
+                            <th>Member CIN</th>
+                            <th>Member</th>
+                            <th>Current Status</th>
+                            <th>Next StepTask</th>
+                            <th>
+                                Medicaid Expiration date
+                            </th>
+                            <th>
+                                Recert Due Date
+                            </th>
+                            <th>
+                                Date Letter Sent
+                            </th>
+                            <th>
+                                Date of first Call Attempted
+                            </th>
+                            @*<th>
+                                Date of First Succesful Contact
+                                </th>*@
+                            @*<th>
+                                Date of Final Attempt
+                                </th>*@
+                            @*<th>
+                                Count of Outreaches
+                                </th>*@
+                            <th>
+                                Date Submission/Receipt Confirmed
+                            </th>
+                            @*<th>
+                                Submitted by FHS?
+
+                                </th>*@
+                            @*<th>
+                                Reason FHS Did Not Submit
+
+                                </th>*@
+                            @*<th>
+                                Submitted by HRA Due Date?
+
+                                </th>*@
+                            <th>
+                                Reason Submitted After HRA Due Date
+
+                            </th>
+                            @*<th>
+                                Did Member Lose Medicaid?
+
+                                </th>
+                                <th>
+                                Date of First Outreach  following loss of Medicaid
+
+                                </th>
+                                <th>
+                                Reason Medicaid Closed
+
+                                </th>*@
+                            <th>
+                                Comment
+                            </th>
+                            <th>
+                                Comment2
+                            </th>
+                            <th>
+                                Comment3
+                            </th>
+                            <th>
+                                Comment4
+                            </th>
+                            <th>
+                                Comment5
+                            </th>
+                            <th>
+                                Comment6
+                            </th>
+                            <th>
+                                Comment7
+                            </th>
+                            <th>
+                                Comment8
+                            </th>
+                            <th>
+                                Comment9
+                            </th>
+                            <th>
+                                Comment10
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/Theme/app-assets/vendors/js/vendors.min.js"></script>
+<script src="~/Theme/app-assets/vendors/js/forms/select/select2.full.min.js"></script>
+<script src="~/Theme/app-assets/js/scripts/forms/select/form-select2.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+
+<script>
+
+function getSelectedOptions(sel) {
+  var Multiplevae = "";
+  var opts = [],opt;
+  var len = sel.options.length;
+  for (var i = 0; i < len; i++) {
+    opt = sel.options[i];
+    if (opt.selected) {
+      Multiplevae +=opt.value +","
+      //opts.push(opt);
+    }
+  }
+  //return opts;
+  //return Multiplevae.trimEnd(',');
+  getMemeberList(Multiplevae.trimEnd(','));
+}
+//$('.monthselect').on('select2:select', function (e) {
+
+//debugger;  
+//})
+     //$('body').on('change','.monthselect',function (e) {
+     //    debugger;
+     //       e.preventDefault();
+     //       var selected = $(this).val();
+     //       console.log(selected);
+     //   });
+  
+        $(document).ready(function () {
+            $(".desutj").css("display", "none");
+                            getMemeberList();
+        })
+
+        function getMemeberList(valuest) {
+                                 $('#example').DataTable({
+                                processing: true,
+                                serverSide: true,
+                                searchable: true,
+                                     destroy: true,
+                                     "orderby": [[0, "desc"]],
+                                ajax: {
+                                    url: '@Url.Action("CenterReport", "Report")',
+                                    type: 'POST',
+                                    'data': {"RecertMonth": valuest,
+                                    },
+                                    "datatype": "json"
+                                    },
+                                    columns: [
+                                        { data: "plan", "name": "Plan"},
+                                        { data: "county", "name": "County" },
+                                        { data: "memberCIN", "name": "MemberCIN" },
+                                        { data: "member", "name": "Member" },
+                                        { data: "currentStatus", "name": "currentStatus" },
+                                        { data: "nextStepTask", "name": "nextStepTask" },
+                                        { data: "medicalExpDate", "name": "MedicalExpDate" },
+                                        { data: "recertDueDate", "name": "RecertDueDate" },
+                                        { data: "dateLettSent", "name": "DateLettSent" },
+                                        { data: "dateofFirstcallAttm", "name": "DateofFirstcallAttm" },
+                                        /*{ data: "dateofFirstSuces", "name": "DateofFirstSuces" },*/
+                                        /*{ data: "dateofFinalAttm", "name": "DateofFinalAttm" },*/
+                                     /*   { data: "countofOut", "name": "CountofOut" },*/
+                                        { data: "datesubReceCon", "name": "DatesubReceCon" },
+                                       /* { data: "submittedbyFhs", "name": "SubmittedbyFhs" },*/
+                                      /*  { data: "reasonFhs", "name": "ReasonFhs" },*/
+    /*                                    { data: "submittedbyHra", "name": "SubmittedbyHra" },*/
+                                        { data: "reasonSubAfter", "name": "ReasonSubAfter" },
+                                        //{ data: "didMemberLos", "name": "DidMemberLos" },
+                                        //{ data: "dateofFiout", "name": "DateofFiout" },
+                                        //{ data: "reasonMediClose", "name": "ReasonMediClose" },
+                                        { data: "comment", "name": "Comment" },
+                                        { data: "comment2", "name": "Comment2" },
+                                        { data: "comment3", "name": "Comment3" },
+                                        { data: "comment4", "name": "Comment4" },
+                                        { data: "comment5", "name": "Comment5" },
+                                        { data: "comment6", "name": "Comment6" },
+                                        { data: "comment7", "name": "Comment7" },
+                                        { data: "comment8", "name": "Comment8" },
+                                        { data: "comment9", "name": "Comment9" },
+                                        { data: "comment10", "name": "Comment10" }
+                                    ]
+
+                                });
+                        }
+
+
+                        //$('#example').DataTable({
+                        //    'paging': true,
+                        //    'lengthChange': true,
+                        //    'searching': true,
+                        //    "order": [],
+                        //    'info': true,
+                        //    'autoWidth': true,
+                        //    'columnDefs': [{
+                        //        'targets': [4],
+                        //        'orderable': false,
+                        //    }]
+                        //})
+
+         function ExporttoExcel(iii) {
+             debugger;
+              var Multiplevae = "";
+              var len = $("#multiple-select")[0].options.length;
+  for (var i = 0; i < len; i++) {
+    opt = $("#multiple-select")[0].options[i];
+    if (opt.selected) {
+      Multiplevae +=opt.value +","
+      //opts.push(opt);
+    }
+  }
+             $(".desutj").css("display", "block");
+                $.ajax({
+                url: '@Url.Action("ExportExcelData", "Report")',
+                    type: "GET",
+                    data: {
+                        "Report": iii,"RecertMonth": Multiplevae,
+                    },
+                    success: function (data) {
+
+                    var bytes = Base64ToBytes(data.fileContents);
+                    //var bytes = new Uint8Array(data);
+                    var blob = new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+                    var link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = "CenterReport.xlsx";
+                        link.click();
+                        $(".desutj").css("display", "none");
+                },
+                    error: function (Result) {
+                        $(".desutj").css("display", "none");
+
+                }
+            });
+        }
+        function Base64ToBytes(base64) {
+            var s = window.atob(base64);
+            var bytes = new Uint8Array(s.length);
+            for (var i = 0; i < s.length; i++) {
+                bytes[i] = s.charCodeAt(i);
+            }
+            return bytes;
+        };
+</script>

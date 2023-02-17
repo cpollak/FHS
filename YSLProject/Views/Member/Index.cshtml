@@ -34,21 +34,22 @@
                         <tr>
 
                             <th>
-                                @Html.DisplayName("First Name")
+                                First Name
                             </th>
                             <th>
-                                @Html.DisplayName("Last Name")
+                                Last Name
                             </th>
                             <th>
-                                @Html.DisplayName("Email")
+                                Email
                             </th>
                             <th>
-                                @Html.DisplayName("Primary Phone")
+                                Primary Phone
                             </th>
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody></tbody>
+                    @*<tbody>
                         @foreach (var item in Model)
                         {
                             <tr>
@@ -66,19 +67,15 @@
                                     @Html.DisplayFor(modelItem => item.PrimaryPhone)
                                 </td>
                                 <td>
-                                    @*  @Html.ActionLink("Followup", "Followup", "Member", new { Id = item.MemberID }, new { @class = "btn btn-primary" }) |*@
+                                  
                                     @Html.ActionLink("Edit", "EditMember", "Member", new { Id = item.MemberID }, new { @class = "btn btn-warning" }) |
-                                    @*@Html.ActionLink("Details", "Details", new { Id = item.UserID }, new { @class = "btn btn-success" }) |*@
+                                  
                                     @Html.ActionLink("Delete", "DeleteMember", "Member", new { Id = item.MemberID }, new { @class = "btn btn-danger" })
                                 </td>
                             </tr>
                         }
-                        @*@Parallel.ForEach(Model, (e) =>
-                            {
-
-
-                        })*@
-                    </tbody>
+                       
+                    </tbody>*@
                 </table>
             </div>
         </div>
@@ -96,22 +93,42 @@
 <script>
 
                     $(document).ready(function () {
-                        if ('@ViewBag.successmessage' != null) {
-                            alert('@ViewBag.successmessage');
-                        }
+                        getMemeberList();
                     })
 
+                    function getMemeberList() {
+                             $('#example').DataTable({
+                            processing: true,
+                            serverSide: true,
+                            searchable: true,
+                                 destroy: true,
+                                 "order": [[0, "desc"]],
+                            ajax: {
+                                url: '@Url.Action("MembersList", "Member")',
+                                type: 'POST',
+                                "datatype": "json"
+                                },
+                                columns: [
+                                    { data: "firstName", "name": "FirstName"},
+                                    { data: "lastName", "name": "LastName" },
+                                    { data: "email", "name": "email" },
+                                    { data: "primaryPhone", "name": "primaryPhone" },
+                                    { data: "action" }
+                                ]
+                            });
+                    }
 
-                    $('#example').DataTable({
-                        'paging': true,
-                        'lengthChange': true,
-                        'searching': true,
-                        "order": [],
-                        'info': true,
-                        'autoWidth': true,
-                        'columnDefs': [{
-                            'targets': [4],
-                            'orderable': false,
-                        }]
-                    })
+
+                    //$('#example').DataTable({
+                    //    'paging': true,
+                    //    'lengthChange': true,
+                    //    'searching': true,
+                    //    "order": [],
+                    //    'info': true,
+                    //    'autoWidth': true,
+                    //    'columnDefs': [{
+                    //        'targets': [4],
+                    //        'orderable': false,
+                    //    }]
+                    //})
 </script>

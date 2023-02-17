@@ -41,9 +41,13 @@ new
 
                             @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
                         </div>
-
-
                         <div class="col-md-3">
+                            @Html.LabelFor(model => model.FollowUpDate, htmlAttributes: new { @class = "control-label " })
+                            <input id="FollowUpDate" asp-for="FollowUpDate" da type="date" class="form-control" />
+                            @Html.ValidationMessageFor(model => model.FollowUpDate, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="col-md-6">
                             @Html.LabelFor(model => model.Notes, htmlAttributes: new { @class = "control-label " })
                             @Html.TextAreaFor(model => model.Notes, new { htmlAttributes = new { @class = "form-control" }, rows = "2", @style = "width: 100%;" })
                             @Html.ValidationMessageFor(model => model.Notes, "", new { @class = "text-danger" })
@@ -65,6 +69,23 @@ new
 }
 @section Scripts {
     <script>
-       
+        $(".sve").click(function () {
+            if ($("#Type").val() == "" && $("#Notes").val() == "") {
+                alert("Type & Notes is required");
+                return false;
+            }
+            else {
+                if ($("#Type").val() == "") {
+                    alert("Type is required");
+                    return false;
+                }
+                if ($("#Notes").val() == "") {
+                    alert("Notes is required");
+                    return false;
+                }
+                
+            }
+        })
+
     </script>
 }

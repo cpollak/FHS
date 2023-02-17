@@ -16,7 +16,7 @@ namespace YSLProject.BAL
             try
             {
                 SqlCommand Cmd = new SqlCommand();
-                Cmd.CommandText = "SP_UserMaster";
+                Cmd.CommandText = "SP_UserMasterS";
                 Cmd.Parameters.AddWithValue("@Spara", "Select");
                 dt = new DataTable();
                 dt = Select(Cmd);

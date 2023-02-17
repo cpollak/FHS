@@ -35,5 +35,7 @@ namespace YSLProject.Table
 
         public int CreatedBy { get; set; }
         public DateTime Nextduedate { get; set; }
+
+        public bool IsDeleted { get; set; }
     }
 }

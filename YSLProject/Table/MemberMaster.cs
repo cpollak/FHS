@@ -117,7 +117,16 @@ namespace YSLProject.Table
         public string Gender { get; set; }
 
         public string Facility { get; set; }
-
+        public string CaseType { get; set; }
         public int? AssignId { get; set; }
+        public bool? RecertificationProcess { get; set; }
+    }
+
+    public class MemberCount
+    {
+        [Key]
+        public int MemberID { get; set; }
+
+       
     }
 }

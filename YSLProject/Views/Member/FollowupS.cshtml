@@ -3,6 +3,7 @@
     ViewData["Title"] = "FollowupS";
     Layout = "~/Views/Shared/_Layoutpopup.cshtml";
 }
+@using YSLProject.Models;
 
 <style>
     .modal-body .btn-row {
@@ -42,17 +43,43 @@ new
 
                     <div class="form-group row">
                         <div class="col-md-3">
+                            @Html.HiddenFor(model => model.MembershipStatus)
                             @Html.LabelFor(model => model.CurrentStatus, htmlAttributes: new { @class = "control-label " })
-                            @Html.TextBoxFor(model => model.CurrentStatus, htmlAttributes: new { @class = "form-control", @readonly = "readonly" })
+                            @{
+                                if (Model.CurrentStatusFlg == false)
+                                {
+                                    if (Model.NewStatus == "Requires CPHL Assistance")
+                                    {
+                                        @Html.DropDownList("CurrentStatus", ViewBag.CurrentStatus as SelectList, htmlAttributes: new { @class = "form-control", @Id = "CurrentStatus", @onchange = "getOutComeList(this.value)" })
+                                    }
+                                    else
+                                    {
+                                        @Html.TextBoxFor(model => model.CurrentStatus, htmlAttributes: new { @class = "form-control", @readonly = "readonly" })
+                                    }
+                                }
+                                else
+                                {
+                                    if (Model.MembershipStatus == 4)
+                                    {
+                                        @Html.DropDownList("CurrentStatus", ViewBag.CurrentStatus as SelectList, htmlAttributes: new { @class = "form-control", @Id = "CurrentStatus", @onchange = "getOutComeList(this.value)", @disabled = "disabled" })
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownList("CurrentStatus", ViewBag.CurrentStatus as SelectList, htmlAttributes: new { @class = "form-control", @Id = "CurrentStatus", @onchange = "getOutComeList(this.value)" })
+                                    }
+                                }
+                            }
+
+                            @*@Html.TextBoxFor(model => model.CurrentStatus, htmlAttributes: new { @class = "form-control", @readonly = "readonly" })*@
 
                             @Html.ValidationMessageFor(model => model.CurrentStatus, "", new { @class = "text-danger" })
                         </div>
                         <div class="col-md-3">
                             @Html.LabelFor(model => model.Outcome, htmlAttributes: new { @class = "control-label " })
-                            @if (ViewBag.Outcome != null)
-                            {
-                                @Html.DropDownListFor(model => model.Outcome, (IEnumerable<SelectListItem>)ViewBag.Outcome, htmlAttributes: new { @class = "form-control", @onchange = "OutComeChange(this.value)" })
-                            }
+                            @*@if (ViewBag.Outcome != null)
+                                {*@
+                            @Html.DropDownListFor(model => model.Outcome, (IEnumerable<SelectListItem>)ViewBag.Outcome, "Select", htmlAttributes: new { @class = "form-control", @onchange = "OutComeChange(this.value)" })
+                            @*}*@
 
                             @Html.ValidationMessageFor(model => model.Outcome, "", new { @class = "text-danger" })
                         </div>
@@ -73,7 +100,7 @@ new
                                 });
                             }
                             @Html.LabelFor(model => model.NextStepTask, htmlAttributes: new { @class = "control-label " })
-                            @Html.DropDownListFor(model => model.NextStepTask, listItems, htmlAttributes: new { @class = "form-control", @Id = "ddlNextStepTask", @onChange = "ChangeNextTask()" })
+                            @*@Html.DropDownListFor(model => model.NextStepTask, listItems, htmlAttributes: new { @class = "form-control", @Id = "ddlNextStepTask", @onChange = "ChangeNextTask()" })*@
                             @Html.TextBoxFor(model => model.NextStepTask, htmlAttributes: new { @class = "form-control", @Id = "NextStepTask", @readonly = "readonly" })
                             @Html.ValidationMessageFor(model => model.NextStepTask, "", new { @class = "text-danger" })
                         </div>
@@ -116,18 +143,19 @@ new
         </div>
         <div class="form-group row btn-row">
             <div class=" col-md-12 ">
-                @{
-                    if (Model.NewStatus != null)
-                    {
-                        <button type="submit" class="btn btn-primary sve"><i class="fa fa-save"></i> Submit</button>
-                    }
-                    else
-                    {
-                        <label style="color:red;font-weight:bold">Opps! No more step for add new follow up</label>
-                    }
-                }
+                <button type="submit" class="btn btn-primary sve"><i class="fa fa-save"></i> Submit</button>
+                @*@{
+                        if (Model.NewStatus != null)
+                        {
+                            <button type="submit" class="btn btn-primary sve"><i class="fa fa-save"></i> Submit</button>
+                        }
+                        else
+                        {
+                            <label style="color:red;font-weight:bold">Opps! No more step for add new follow up</label>
+                        }
+                    }*@
 
-                <a class="btn btn-primary" href="/Member/Workfollow?memberId=@Model.MemberId">Cancel</a>
+                @*<a class="btn btn-primary" href="/Member/Workfollow?memberId=@Model.MemberId">Cancel</a>*@
             </div>
 
         </div>
@@ -141,184 +169,320 @@ new
             OutComeChange(id);
         });
 
+        $(".sve").click(function () {
+            
+            $("#CurrentStatus").removeAttr("disabled");
+        })
+
         function ChangeNextTask() {
             $("#NextStepTask").val($("#ddlNextStepTask").val());
         }
 
-        function OutComeChange(id) {
-            var CurrentStatus = $("#CurrentStatus").val();
-            var NextStepTask = $("#NextStepTask");
-            var NewStatus = $("#NewStatus");
-            var Nextduedate = $("#Nextduedate");
-            var d = new Date();
-            var day = ("0" + d.getDate()).slice(-2);
-            var month = ("0" + (d.getMonth() + 1)).slice(-2);
-            var today = d.getFullYear() + "-" + (month) + "-" + (day);
-            Nextduedate.val(today);
-
-            if (id == "Wrong Number" && CurrentStatus == "Follow up") {
-                NextStepTask.val("Refer to CPHL");
-                NewStatus.val("Requires CPHL Assistance");
-            }
-            else if (id == "Left Voice Mail" && CurrentStatus == "Follow up") {
-                NextStepTask.val("Call Back");
-                NewStatus.val("Follow up");
-                d.setDate(d.getDate() + 1);
-                var day = ("0" + d.getDate()).slice(-2);
-                var month = ("0" + (d.getMonth() + 1)).slice(-2);
-                var today = d.getFullYear() + "-" + (month) + "-" + (day);
-                $('#Nextduedate').val(today);
-            }
-            else if (id == "Left Voice Mail" && CurrentStatus == "Follow up") {
-                NextStepTask.val("Call Back");
-                NewStatus.val("Follow up");
-                d.setDate(d.getDate() + 1);
-                var day = ("0" + d.getDate()).slice(-2);
-                var month = ("0" + (d.getMonth() + 1)).slice(-2);
-                var today = d.getFullYear() + "-" + (month) + "-" + (day);
-                $('#Nextduedate').val(today);
-            }
-            else if (id == "Called five times" && CurrentStatus == "Follow up") {
-                NextStepTask.val("Refer to CPHL");
-                NewStatus.val("Requires CPHL Assistance");
-
-            }
-            else if (id == "FHS mailed/e-mailed recert to member" && CurrentStatus == "Follow up") {
-                NextStepTask.val("Call Back");
-                NewStatus.val("Follow up");
-                d.setDate(d.getDate() + 5);
-                var day = ("0" + d.getDate()).slice(-2);
-                var month = ("0" + (d.getMonth() + 1)).slice(-2);
-                var today = d.getFullYear() + "-" + (month) + "-" + (day);
-                Nextduedate.val(today);
-            }
-            else if (id == "Not compliant" && CurrentStatus == "Follow up") {
-                NextStepTask.val("Refer to CPHL");
-                NewStatus.val("Requires CPHL Assistance");
-            }
-            else if (id == "Excess Resource – CPHL to advise member" && CurrentStatus == "Follow up") {
-                NextStepTask.val("Refer to CPHL");
-                NewStatus.val("Requires CPHL Assistance");
-            }
-            else if (id == "Recert sent to FHS" && CurrentStatus == "Follow up") {
-                NextStepTask.val("Review Recert");
-                NewStatus.val("Recert in Review");
-                d.setDate(d.getDate() + 5);
-                var day = ("0" + d.getDate()).slice(-2);
-                var month = ("0" + (d.getMonth() + 1)).slice(-2);
-                var today = d.getFullYear() + "-" + (month) + "-" + (day);
-                Nextduedate.val(today);
-            }
-            else if (id == "Recert sent to Medicaid by FHS" && CurrentStatus == "Follow up") {
-                NextStepTask.val("Submit Through Edits");
-                NewStatus.val("Follow up Through Edits");
-                d.setDate(d.getDate() + 14);
-                var day = ("0" + d.getDate()).slice(-2);
-                var month = ("0" + (d.getMonth() + 1)).slice(-2);
-                var today = d.getFullYear() + "-" + (month) + "-" + (day);
-                Nextduedate.val(today);
-            }
-            else if (id == "Recert Packet sent to Medicaid by member" && CurrentStatus == "Follow up") {
-                NextStepTask.val("Call Medicaid Hotline");
-                NewStatus.val("Follow up");
-                d.setDate(d.getDate() + 7);
-                var day = ("0" + d.getDate()).slice(-2);
-                var month = ("0" + (d.getMonth() + 1)).slice(-2);
-                var today = d.getFullYear() + "-" + (month) + "-" + (day);
-                Nextduedate.val(today);
-            }
-            else if (id == "Hospitalized" && CurrentStatus == "Follow up") {
-                NextStepTask.val("Call Back");
-                NewStatus.val("Follow up");
-            }
-            else if (id == "OOSA (out of service area)" && CurrentStatus == "Follow up") {
-                NextStepTask.val("Call Back");
-                NewStatus.val("Follow up");
-            }
-            else if (id == "Nursing home Long Term" && CurrentStatus == "Follow up") {
-                NextStepTask.val("");
-                NewStatus.val("To be discharged");
-            }
-            else if (id == "Medicaid Approved" && CurrentStatus == "Follow up") {
-                NextStepTask.val("");
-                NewStatus.val("Recertification Approved");
-            }
-            else if (id == "Medicaid Rejected" && CurrentStatus == "Follow up") {
-                NextStepTask.val("");
-                NewStatus.val("Recertification Denied");
-            }
-            else if (id == "Recertification Deferred" && CurrentStatus == "Follow up") {
-                NextStepTask.val("Follow-up");
-                NewStatus.val("Follow up");
-            }
-
-            //  Recert in review
-            else if (id == "Check If Packet Approved") {
-                NextStepTask.val("Call Medicaid Hotline");
-                NewStatus.val("Packet In Review");
-                d.setDate(d.getDate() + 7);
-                var day = ("0" + d.getDate()).slice(-2);
-                var month = ("0" + (d.getMonth() + 1)).slice(-2);
-                var today = d.getFullYear() + "-" + (month) + "-" + (day);
-                Nextduedate.val(today);
-            }
-
-
-
-            //Requires CPHL Assistance
-            else if (id == "Left Voice Mail" && CurrentStatus == "Requires CPHL Assistance") {
-                NextStepTask.val("Call Back");
-                NewStatus.val("Follow up");
-                d.setDate(d.getDate() + 1);
-                var day = ("0" + d.getDate()).slice(-2);
-                var month = ("0" + (d.getMonth() + 1)).slice(-2);
-                var today = d.getFullYear() + "-" + (month) + "-" + (day);
-                $('#Nextduedate').val(today);
-            }
-            else if (id == "Not compliant" && CurrentStatus == "Requires CPHL Assistance") {
-                NextStepTask.val("Refer to CPHL");
-                NewStatus.val("Requires CPHL Assistance");
-            }
-            else if (id == "Excess Resource – CPHL to advise member" && CurrentStatus == "Requires CPHL Assistance") {
-                NextStepTask.val("Call Family");
-                NewStatus.val("Follow up");
-                d.setDate(d.getDate() + 1);
-                var day = ("0" + d.getDate()).slice(-2);
-                var month = ("0" + (d.getMonth() + 1)).slice(-2);
-                var today = d.getFullYear() + "-" + (month) + "-" + (day);
-                Nextduedate.val(today);
-            }
-
-            //Follow-up THROUGH EDITS
-            else if (id == "Rejected" || id == "Deferred") {
-                NextStepTask.val("Call Family");
-                NewStatus.val("Follow up");
-                d.setDate(d.getDate() + 1);
-                var day = ("0" + d.getDate()).slice(-2);
-                var month = ("0" + (d.getMonth() + 1)).slice(-2);
-                var today = d.getFullYear() + "-" + (month) + "-" + (day);
-                Nextduedate.val(today);
-            }
-
-            //Non-covered
-            else if (id == "Deceased" || id == "Relink") {
-                NextStepTask.val("Notify CPHL");
-                NewStatus.val("");
-
-            }
-            else if (id == "PA case" || id == "SSI case") {
-                NextStepTask.val("Call member");
-                NewStatus.val("Follow up");
-                d.setDate(d.getDate() + 1);
-                var day = ("0" + d.getDate()).slice(-2);
-                var month = ("0" + (d.getMonth() + 1)).slice(-2);
-                var today = d.getFullYear() + "-" + (month) + "-" + (day);
-                Nextduedate.val(today);
-            }
-            else if (id == "OOSA" && CurrentStatus == "NonCovered") {
-                $("#ddlNextStepTask").show();
-                $("#NextStepTask").val($("#ddlNextStepTask").val());
-            }
+        function getOutComeList(id) {
+            $.ajax({
+                url: '/Member/getOutComeList',
+                type: "GET",
+                dataType: "JSON",
+                data: { id: id, membershipSt: $("#MembershipStatus").val(), memberId: $("#MemberId").val() },
+                success: function (states) {
+                   
+                    $("#Outcome").html("");
+                    $('select#Outcome').html('<option value="">--Select--</option>');
+                    $.each(states, function (data, value) {
+                        $("#Outcome").append(
+                            $('<option></option>').val(value.value).html(value.text));
+                    });
+                    $("#NextStepTask").val('');
+                    $("#NewStatus").val('');
+                }
+            });
         }
+
+        function OutComeChange(id) {
+          
+            var d = new Date();
+            $.ajax({
+                url: '/Member/OutComeChange',
+                type: "GET",
+                dataType: "JSON",
+                data: { id: id},
+                success: function (states) {
+                    debugger;
+                    if (states != null) {
+                        $("#NextStepTask").val(states.nextStepTask);
+                        $("#NewStatus").val(states.newStatus);
+                        if (states.name == "Left Voice Mail") {
+                            $("#PeriodOfTheDay").val("Noon (11 AM to 2 PM)");
+                        }
+                        if (states.nextDueHours != "0") {
+                            var days = states.nextDueHours;
+                            d.setDate(d.getDate() + days);
+                            var day = ("0" + d.getDate()).slice(-2);
+                            var month = ("0" + (d.getMonth() + 1)).slice(-2);
+                            var today = d.getFullYear() + "-" + (month) + "-" + (day);
+                            /* Nextduedate.val(today);*/
+                            $('#Nextduedate').val(today);
+                        }
+                        else {
+                            $('#Nextduedate').val('');
+                        }                        
+                    }
+                }
+            });
+        }
+
+        //function OutComeChange(id) {
+            
+        //    var CurrentStatus = $("#CurrentStatus").val();
+        //    var NextStepTask = $("#NextStepTask");
+        //    var NewStatus = $("#NewStatus");
+        //    var Nextduedate = $("#Nextduedate");
+        //    var d = new Date();
+        //    var day = ("0" + d.getDate()).slice(-2);
+        //    var month = ("0" + (d.getMonth() + 1)).slice(-2);
+        //    var today = d.getFullYear() + "-" + (month) + "-" + (day);
+        //    Nextduedate.val(today);
+
+        //    if ($("#MembershipStatus").val() == 4) {
+        //        if (id == "Wrong Number" && CurrentStatus == "2") {
+        //            NextStepTask.val("Refer to CPHL");
+        //            NewStatus.val("Requires CPHL Assistance");
+        //        }
+        //        else if (id == "Left Voice Mail" && CurrentStatus == "2") {
+        //            NextStepTask.val("Follow Up");
+        //            NewStatus.val("Follow Up");
+        //            d.setDate(d.getDate() + 1);
+        //            var day = ("0" + d.getDate()).slice(-2);
+        //            var month = ("0" + (d.getMonth() + 1)).slice(-2);
+        //            var today = d.getFullYear() + "-" + (month) + "-" + (day);
+        //            $('#Nextduedate').val(today);
+        //        }
+        //        else if (id == "FHS Mailed/ emailed Docs for App" && CurrentStatus == "2") {
+        //            NextStepTask.val("Call Back ");
+        //            NewStatus.val("Follow Up");
+        //            d.setDate(d.getDate() + 5);
+        //            var day = ("0" + d.getDate()).slice(-2);
+        //            var month = ("0" + (d.getMonth() + 1)).slice(-2);
+        //            var today = d.getFullYear() + "-" + (month) + "-" + (day);
+        //            Nextduedate.val(today);
+        //        }
+        //        else if (id == "New App submitted to Medicaid by FHS" && CurrentStatus == "2") {
+        //            NextStepTask.val("Submit Through Edits");
+        //            NewStatus.val("Follow Up Through Edits");
+        //        }
+        //        else if (id == "New App sent to Medicaid by Member" && CurrentStatus == "2") {
+        //            NextStepTask.val("Check Epaces");
+        //            NewStatus.val("Follow Up");
+        //        }
+        //        else if (id == "Hospitalized" && CurrentStatus == "2") {
+        //            NextStepTask.val("Call Back");
+        //            NewStatus.val("Follow Up");
+        //        }
+        //        else if (id == "OOSA (Out of Service Area)" && CurrentStatus == "2") {
+        //            NextStepTask.val("Refer To CPHL");
+        //            NewStatus.val("Requires CPHL Assistance");
+        //        }
+        //        else if (id == "Nursing Home Long Term" && CurrentStatus == "2") {
+        //            NextStepTask.val("Refer to CPHL");
+        //            NewStatus.val("Follow Up");
+        //        }
+        //        else if (id == "Medicaid Approved" && CurrentStatus == "2") {
+        //            NextStepTask.val("");
+        //            NewStatus.val("");
+        //        }
+        //        else if (id == "Medicaid Rejected" && CurrentStatus == "2") {
+        //            NextStepTask.val("Follow Up");
+        //            NewStatus.val("Follow Up");
+        //        }
+        //        else if (id == "New App Deferred" && CurrentStatus == "2") {
+        //            NextStepTask.val("Follow Up");
+        //            NewStatus.val("Follow Up");
+        //        }
+        //    }
+        //    else {
+        //        if (CurrentStatus == "Recertification Initiated" || CurrentStatus == "1") {
+        //            NextStepTask.val("Call Member");
+        //            NewStatus.val("Follow up");
+        //            d.setDate(d.getDate() + 10);
+        //            var day = ("0" + d.getDate()).slice(-2);
+        //            var month = ("0" + (d.getMonth() + 1)).slice(-2);
+        //            var today = d.getFullYear() + "-" + (month) + "-" + (day);
+        //            Nextduedate.val(today);
+        //        }
+        //        else if (id == "Wrong Number" && (CurrentStatus == "Follow up" || CurrentStatus == "2")) {
+        //            NextStepTask.val("Refer to CPHL");
+        //            NewStatus.val("Requires CPHL Assistance");
+        //        }
+        //        else if (id == "Left Voice Mail" && (CurrentStatus == "Follow up" || CurrentStatus == "2")) {
+        //            NextStepTask.val("Call Back");
+        //            NewStatus.val("Follow up");
+        //            d.setDate(d.getDate() + 1);
+        //            var day = ("0" + d.getDate()).slice(-2);
+        //            var month = ("0" + (d.getMonth() + 1)).slice(-2);
+        //            var today = d.getFullYear() + "-" + (month) + "-" + (day);
+        //            $('#Nextduedate').val(today);
+        //        }
+        //        else if (id == "Initial Follow-up Call" && (CurrentStatus == "Follow up" || CurrentStatus == "2")) {
+        //            NextStepTask.val("Call Back");
+        //            NewStatus.val("Follow up");
+        //            d.setDate(d.getDate() + 1);
+        //            var day = ("0" + d.getDate()).slice(-2);
+        //            var month = ("0" + (d.getMonth() + 1)).slice(-2);
+        //            var today = d.getFullYear() + "-" + (month) + "-" + (day);
+        //            $('#Nextduedate').val(today);
+        //        }
+        //        else if (id == "Called five times" && (CurrentStatus == "Follow up" || CurrentStatus == "2")) {
+        //            NextStepTask.val("Refer to CPHL");
+        //            NewStatus.val("Requires CPHL Assistance");
+
+        //        }
+        //        else if (id == "FHS mailed/e-mailed recert to member" && (CurrentStatus == "Follow up" || CurrentStatus == "2")) {
+        //            NextStepTask.val("Call Back");
+        //            NewStatus.val("Follow up");
+        //            d.setDate(d.getDate() + 5);
+        //            var day = ("0" + d.getDate()).slice(-2);
+        //            var month = ("0" + (d.getMonth() + 1)).slice(-2);
+        //            var today = d.getFullYear() + "-" + (month) + "-" + (day);
+        //            Nextduedate.val(today);
+        //        }
+        //        else if (id == "Not compliant" && (CurrentStatus == "Follow up" || CurrentStatus == "2")) {
+        //            NextStepTask.val("Refer to CPHL");
+        //            NewStatus.val("Requires CPHL Assistance");
+        //        }
+        //        else if (id == "Excess Resource – CPHL to advise member" && (CurrentStatus == "Follow up" || CurrentStatus == "2")) {
+        //            NextStepTask.val("Refer to CPHL");
+        //            NewStatus.val("Requires CPHL Assistance");
+        //        }
+        //        else if (id == "Recert sent to FHS" && (CurrentStatus == "Follow up" || CurrentStatus == "2")) {
+        //            NextStepTask.val("Review Recert");
+        //            NewStatus.val("Recert in Review");
+        //            d.setDate(d.getDate() + 5);
+        //            var day = ("0" + d.getDate()).slice(-2);
+        //            var month = ("0" + (d.getMonth() + 1)).slice(-2);
+        //            var today = d.getFullYear() + "-" + (month) + "-" + (day);
+        //            Nextduedate.val(today);
+        //        }
+        //        /*else if ((id == "Recert submitted to Medicaid by FHS" || id == "Call hotline/ Access Submitted") && (CurrentStatus == "Follow up" || CurrentStatus == "2")) {*/
+        //        else if ((id == "Recert submitted to Medicaid by FHS" || id == "Call hotline/ Access Received" || id == "Call hotline/ Access Renewed" || id == "Call hotline/ Reprint not available") && (CurrentStatus == "Follow up" || CurrentStatus == "2")) {
+        //            NextStepTask.val("Submit Through Edits");
+        //            NewStatus.val("Follow up Through Edits");
+        //            d.setDate(d.getDate() + 14);
+        //            var day = ("0" + d.getDate()).slice(-2);
+        //            var month = ("0" + (d.getMonth() + 1)).slice(-2);
+        //            var today = d.getFullYear() + "-" + (month) + "-" + (day);
+        //            Nextduedate.val(today);
+        //        }
+        //        else if (id == "Recert Packet sent to Medicaid by member" && (CurrentStatus == "Follow up" || CurrentStatus == "2")) {
+        //            NextStepTask.val("Call Medicaid Hotline");
+        //            NewStatus.val("Follow up");
+        //            d.setDate(d.getDate() + 7);
+        //            var day = ("0" + d.getDate()).slice(-2);
+        //            var month = ("0" + (d.getMonth() + 1)).slice(-2);
+        //            var today = d.getFullYear() + "-" + (month) + "-" + (day);
+        //            Nextduedate.val(today);
+        //        }
+        //        else if (id == "Hospitalized" && (CurrentStatus == "Follow up" || CurrentStatus == "2")) {
+        //            NextStepTask.val("Call Back");
+        //            NewStatus.val("Follow up");
+        //        }
+        //        else if (id == "OOSA (out of service area)" && (CurrentStatus == "Follow up" || CurrentStatus == "2")) {
+        //            NextStepTask.val("Call Back");
+        //            NewStatus.val("Follow up");
+        //        }
+        //        else if (id == "Nursing home Long Term" && (CurrentStatus == "Follow up" || CurrentStatus == "2")) {
+        //            NextStepTask.val("Refer to CPHL");
+        //            NewStatus.val("Follow up");
+        //        }
+        //        else if (id == "Medicaid Approved" && (CurrentStatus == "Follow up" || CurrentStatus == "2")) {
+        //            NextStepTask.val("");
+        //            NewStatus.val("Recertification Approved");
+        //        }
+        //        else if (id == "Medicaid Rejected" && (CurrentStatus == "Follow up" || CurrentStatus == "2")) {
+        //            NextStepTask.val("Follow-up");
+        //            NewStatus.val("Recertification Denied");
+        //        }
+        //        else if (id == "Recertification Deferred" && (CurrentStatus == "Follow up" || CurrentStatus == "2")) {
+        //            NextStepTask.val("Follow-up");
+        //            NewStatus.val("Follow up");
+        //        }
+        //        else if (id == "Spoke To Member" && (CurrentStatus == "Follow up" || CurrentStatus == "2")) {
+        //            NextStepTask.val("Follow-up");
+        //            NewStatus.val("Follow up");
+        //            d.setDate(d.getDate() + 1);
+        //            var day = ("0" + d.getDate()).slice(-2);
+        //            var month = ("0" + (d.getMonth() + 1)).slice(-2);
+        //            var today = d.getFullYear() + "-" + (month) + "-" + (day);
+        //            Nextduedate.val(today);
+        //        }
+
+        //        //  Recert in review
+        //        else if (id == "Check If Packet Approved") {
+        //            NextStepTask.val("Call Medicaid Hotline");
+        //            NewStatus.val("Packet In Review");
+        //            d.setDate(d.getDate() + 7);
+        //            var day = ("0" + d.getDate()).slice(-2);
+        //            var month = ("0" + (d.getMonth() + 1)).slice(-2);
+        //            var today = d.getFullYear() + "-" + (month) + "-" + (day);
+        //            Nextduedate.val(today);
+        //        }
+
+
+
+        //        //Requires CPHL Assistance
+        //        else if (id == "Left Voice Mail" && (CurrentStatus == "Requires CPHL Assistance" || CurrentStatus == "5")) {
+        //            NextStepTask.val("Call Back");
+        //            NewStatus.val("Follow up");
+        //            d.setDate(d.getDate() + 1);
+        //            var day = ("0" + d.getDate()).slice(-2);
+        //            var month = ("0" + (d.getMonth() + 1)).slice(-2);
+        //            var today = d.getFullYear() + "-" + (month) + "-" + (day);
+        //            $('#Nextduedate').val(today);
+        //        }
+        //        else if (id == "Not compliant" && (CurrentStatus == "Requires CPHL Assistance" || CurrentStatus == "5")) {
+        //            NextStepTask.val("Refer to CPHL");
+        //            NewStatus.val("Requires CPHL Assistance");
+        //        }
+        //        else if (id == "Excess Resource – CPHL to advise member" && (CurrentStatus == "Requires CPHL Assistance" || CurrentStatus == "5")) {
+        //            NextStepTask.val("Call Family");
+        //            NewStatus.val("Follow up");
+        //            d.setDate(d.getDate() + 1);
+        //            var day = ("0" + d.getDate()).slice(-2);
+        //            var month = ("0" + (d.getMonth() + 1)).slice(-2);
+        //            var today = d.getFullYear() + "-" + (month) + "-" + (day);
+        //            Nextduedate.val(today);
+        //        }
+
+        //        //Follow-up THROUGH EDITS
+        //        else if (id == "Rejected" || id == "Deferred") {
+        //            NextStepTask.val("Call Family");
+        //            NewStatus.val("Follow up");
+        //            d.setDate(d.getDate() + 1);
+        //            var day = ("0" + d.getDate()).slice(-2);
+        //            var month = ("0" + (d.getMonth() + 1)).slice(-2);
+        //            var today = d.getFullYear() + "-" + (month) + "-" + (day);
+        //            Nextduedate.val(today);
+        //        }
+
+        //        //Non-covered
+        //        else if (id == "Deceased" || id == "Relink") {
+        //            NextStepTask.val("Notify CPHL");
+        //            NewStatus.val("");
+
+        //        }
+        //        else if (id == "PA case" || id == "SSI case") {
+        //            NextStepTask.val("Call member");
+        //            NewStatus.val("Follow up");
+        //            d.setDate(d.getDate() + 1);
+        //            var day = ("0" + d.getDate()).slice(-2);
+        //            var month = ("0" + (d.getMonth() + 1)).slice(-2);
+        //            var today = d.getFullYear() + "-" + (month) + "-" + (day);
+        //            Nextduedate.val(today);
+        //        }
+        //        else if (id == "OOSA" && (CurrentStatus == "NonCovered" || CurrentStatus == "22")) {
+        //            $("#ddlNextStepTask").show();
+        //            $("#NextStepTask").val($("#ddlNextStepTask").val());
+        //        }
+        //    }
+        //}
     </script>
 }

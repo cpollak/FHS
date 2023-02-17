@@ -11,13 +11,14 @@
     <meta name="description" content="Modern admin is super flexible, powerful, clean &amp; modern responsive bootstrap 4 admin template with unlimited possibilities with bitcoin dashboard.">
     <meta name="keywords" content="admin template, modern admin template, dashboard template, flat admin template, responsive admin template, web app, crypto dashboard, bitcoin dashboard">
     <meta name="author" content="PIXINVENT">
-    <title>@ViewData["Title"] - YSLProject</title>
+    <title>@ViewData["Title"] - YSL Project</title>
     <link rel="apple-touch-icon" href="~/Theme/app-assets/images/ico/apple-icon-120.png">
     <link rel="shortcut icon" type="image/x-icon" href="~/Theme/app-assets/images/ico/favicon.ico">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i%7CQuicksand:300,400,500,700" rel="stylesheet">
 
     <!-- BEGIN: Vendor CSS-->
     <link rel="stylesheet" type="text/css" href="~/Theme/app-assets/vendors/css/vendors.min.css">
+    <link rel="stylesheet" type="text/css" href="~/Theme/app-assets/vendors/css/forms/selects/select2.min.css">
     <link rel="stylesheet" type="text/css" href="~/Theme/app-assets/vendors/css/tables/datatable/datatables.min.css">
     <!-- END: Vendor CSS-->
     <!-- BEGIN: Theme CSS-->
@@ -28,6 +29,7 @@
     <!-- END: Theme CSS-->
     <!-- BEGIN: Page CSS-->
     <link rel="stylesheet" type="text/css" href="~/Theme/app-assets/css/core/menu/menu-types/vertical-menu-modern.css">
+    <link rel="stylesheet" type="text/css" href="~/Theme/app-assets/css/core/menu/menu-types/vertical-menu.css">
     <link rel="stylesheet" type="text/css" href="~/Theme/app-assets/css/core/colors/palette-gradient.css">
     <!-- END: Page CSS-->
     <!-- BEGIN: Custom CSS-->
@@ -61,6 +63,17 @@
         .navbar{
             padding:0 !important;
         }
+        .profinename {
+            box-shadow: inset 0 1px 3px 0 rgb(0 0 0 / 50%);
+            width: 40px !important;
+            height: 40px;
+            text-align: center;
+            padding-top: 7px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #fa764a;
+        }
+        
     </style>
     <!-- BEGIN: Header-->
     <nav class="header-navbar navbar-expand-lg navbar navbar-with-menu navbar-without-dd-arrow fixed-top navbar-semi-dark navbar-shadow">
@@ -69,7 +82,7 @@
                 <ul class="nav navbar-nav flex-row">
                     <li class="nav-item mobile-menu d-lg-none mr-auto"><a class="nav-link nav-menu-main menu-toggle hidden-xs" href="#"><i class="ft-menu font-large-1"></i></a></li>
                     <li class="nav-item mr-auto">
-                        <a class="navbar-brand" href="index.html">
+                        <a class="navbar-brand" href="index">
                             <img class="brand-logo" alt="modern admin logo" src="~/Theme/app-assets/images/logo/logo.png">
                             <h3 class="brand-text">YSL Project</h3>
                         </a>
@@ -181,7 +194,7 @@
                             </div>
                         </li>
                     </ul>
-                    <ul class="nav navbar-nav float-right">
+                    @*<ul class="nav navbar-nav float-right">
 
 
 
@@ -196,10 +209,40 @@
                             </a>
                             <div class="dropdown-menu dropdown-menu-right">
 
+                                <div class="dropdown-divider"></div><a class="dropdown-item" asp-area="" asp-controller="Login" asp-action="ForgetPassword"><i class="ft-camera"></i> Forget Password</a>
                                 <div class="dropdown-divider"></div><a class="dropdown-item" asp-area="" asp-controller="Login" asp-action="Logout"><i class="ft-power"></i> Logout</a>
                             </div>
                         </li>
-                    </ul>
+                    </ul>*@
+                    @{
+                        @if (@Context.Session.GetString("UserName") != null)
+                        {
+                            string name = @Context.Session.GetString("UserName").ToLower();
+                            string fullname = char.ToUpper(name[0]) + name.Substring(1);
+                            string firstlet = "";
+                            if (name.Trim() != null)
+                            {
+                                firstlet = name.Trim().Substring(0, 1).ToUpper();
+                            }
+                            <ul class="nav navbar-nav float-right">
+                                <li class="dropdown dropdown-user nav-item">
+                                    <a class="dropdown-toggle nav-link dropdown-user-link" href="#" data-toggle="dropdown" style="padding: 0px;">
+                                        <div style="float: left; margin-top:6px;">
+                                            <span class="mr-1 text-bold-600" style="font-size: 18px;">
+                                                @Html.Raw(fullname)
+                                            </span>
+                                        </div>
+                                        <span class="avatar avatar-online profinename" id="circleid">@Html.Raw(firstlet) </span>
+                                        @*<span class="avatar avatar-online" style="float: right; top: 4px;">@Html.Raw(firstlet)<i></i></span>*@
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right">
+                                        <div class="dropdown-divider"></div><a class="dropdown-item" asp-area="" asp-controller="Login" asp-action="ResetPassword"><i class="ft-camera"></i> Reset Password</a>
+                                        <div class="dropdown-divider"></div><a class="dropdown-item" asp-area="" asp-controller="Login" asp-action="Logout"><i class="ft-power"></i> Logout</a>
+                                    </div>
+                                </li>
+                            </ul>
+                        }
+                    }
                 </div>
             </div>
         </div>
@@ -222,7 +265,8 @@
                     </li>
                 }
 
-                @if (@Context.Session.GetString("UserType") == "Admin") { 
+                @if (@Context.Session.GetString("UserType") == "Admin")
+                {
                     <li class=" nav-item">
                         <a href="#"><i class="la la-clipboard"></i><span class="menu-title" data-i18n="nav.invoice.main"> Manage Members</span></a>
                         <ul class="menu-content">
@@ -251,10 +295,31 @@
                         </ul>
                     </li>
                 }
-                <li>
-                    <a asp-area="" asp-controller="Member" asp-action="Reports"><i class="la la-clipboard"></i><span class="menu-title" data-i18n="">Reports</span></a>
-                </li>
-            </ul>
+                @if (@Context.Session.GetString("UserType") == "Admin")
+                {
+                    <li class="nav-item">
+                        <a href="#"><i class="la la-clipboard"></i><span class="menu-title" data-i18n="nav.invoice.main"> Reports</span></a>
+                        @*<a asp-area="" asp-controller="Member" asp-action="Reports"><i class="la la-clipboard"></i><span class="menu-title" data-i18n="">Reports</span></a>*@
+                        <ul class="menu-content">
+                            <li>
+                                <a class="menu-item" asp-area="" asp-controller="Member" asp-action="Reports"><i></i><span data-i18n="nav.invoice.invoice_summary">Reports</span></a>
+                            </li>
+                            <li>
+                                <a class="menu-item" asp-area="" asp-controller="Report" asp-action="Index"><i></i><span data-i18n="nav.invoice.invoice_template">Non covered Report</span></a>
+                            </li>
+                            <li>
+                                <a class="menu-item" asp-area="" asp-controller="Report" asp-action="CenterReport"><i></i><span data-i18n="nav.invoice.invoice_summary">Center Report</span></a>
+                            </li>
+                            <li>
+                                <a class="menu-item" asp-area="" asp-controller="Report" asp-action="UserReport"><i></i><span data-i18n="nav.invoice.invoice_summary">User Report</span></a>
+                            </li>
+                             <li>
+                                <a class="menu-item ExporttoExcel"><i></i><span data-i18n="nav.invoice.invoice_summary">Download Report County 0 </span></a>
+                            </li>
+                        </ul>
+                    </li>
+                }
+                </ul>
         </div>
     </div>
 
@@ -276,7 +341,7 @@
 
     <footer class="footer footer-static footer-light navbar-border navbar-shadow">
         <p class="clearfix blue-grey lighten-2 text-sm-center mb-0 px-2">
-            &copy; 2021 - YSLProject - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2021 - YSL Project - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </p>
     </footer>
     <!-- END: Footer-->
@@ -317,6 +382,28 @@
             sessionStorage.setItem("sele",valu);
         })
        
+        $(".ExporttoExcel").click(function () {
+            
+             $.ajax({
+            url: '@Url.Action("ExportExcelData", "Report")',
+                type: "GET",
+                data: {
+                    "Report": "3",
+                },
+                success: function (data) {
+                var bytes = Base64ToBytes(data.fileContents);
+                //var bytes = new Uint8Array(data);
+                var blob = new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = "County_0_Memeber.xlsx";
+                link.click();
+            },
+            error: function (Result) {
+            }
+            });
+        })
+
        
     </script>
     @RenderSection("Scripts", required: false)

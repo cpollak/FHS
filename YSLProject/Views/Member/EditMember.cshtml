@@ -160,13 +160,13 @@
                         <div class="form-group row">
                             <div class="col-md-2">
                                 <label class="control-label">RelationShip</label>
-                                @Html.EditorFor(model => model.contactModels[0].RelationShip, new { htmlAttributes = new { @type = "number", @min = "1", @step = "1", @value = "1", @class = "form-control", @style = "display:none" } })
+                                @Html.TextAreaFor(model => model.contactModels[0].RelationShip, new { @value = "1", @class = "form-control", @style = "display:none" })
 
                             </div>
-                            <div class="col-md-2">
+                            @*<div class="col-md-2">
                                 <label class="control-label">Name</label>
                                 @Html.EditorFor(model => model.contactModels[0].Name, new { htmlAttributes = new { @class = "form-control", @style = "display:none" } })
-                            </div>
+                            </div>*@
                             <div class="col-md-2">
                                 <label class="control-label">Phone</label>
                                 @Html.EditorFor(model => model.contactModels[0].Phone, new { htmlAttributes = new { @class = "form-control", @style = "display:none" } })
@@ -189,7 +189,6 @@
                         <div class="form-group">
                             <input type="submit" value="Save" class="btn btn-primary" />
                             <a asp-action="Index" class="btn btn-warning">Back to List</a>
-
                         </div>
                     </form>
                 </div>
@@ -204,7 +203,7 @@
 <script>
        
     $(document).ready(function () {
-        debugger;
+       
             @*var model = @Html.Raw(Json.Encode(Model.contactModels));*@
             var model=JSON.parse('@Html.Raw(Json.Serialize(Model.contactModels))');
 
@@ -273,7 +272,6 @@
             }
 
             jQuery(document).on('click', '#Professional', function () {
-
                 m++;
                 $(this).removeAttr('id');
                 $(this).attr('id', 'ProfessionalDelete');
@@ -299,7 +297,6 @@
                 var pdiv6 = "<div class='col-md-1'><button type='button' name='name" + m + "' id='Professional'    class='btn btn-primary fa fa-plus-square sdr test delte" + m + "'></button></div>";
                 pdi.append(pdiv, pdiv2, pdiv3, pdiv4, pdiv5, pdiv6)
                 $(".addmember").append(pdi);
-
             });
 
             $(document).on('click', '#ProfessionalDelete', function () {

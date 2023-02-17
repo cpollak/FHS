@@ -1,0 +1,200 @@
+﻿@{
+    ViewData["Title"] = "Index";
+}
+<style>
+    .btn-warning, .btn-danger {
+        padding: 3px 1rem;
+    }
+</style>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.24/datatables.min.css" />
+<link href="~/css/loders.css" rel="stylesheet" />
+
+<div class="desutj">
+    <div class="loader"></div>
+</div>
+<div class="form-group row">
+
+    <div class="col-md-12">
+        <h1>Usage Report</h1>
+    </div>
+    <br />
+    <div class="col-md-2" style="
+    margin-top: 50px;
+    margin-bottom: 10px;
+">
+        <label> Start Date:</label>
+        <input type="date" id="StartDate" class="form-control" />
+    </div>
+
+    <div class="col-md-2" style="
+    margin-top: 50px;
+    margin-bottom: 10px;
+">
+        <label> End Date:</label>
+        <input type="date" id="EndDate" class="form-control" />
+    </div>
+    <div class="col-md-2" style="
+    margin-top: 50px;
+    margin-bottom: 10px;
+">
+        <label>&nbsp;</label><br />
+        <button title="Search" class="btn btn-success btnfile">Search</button>
+    </div>
+   
+    @*<div class="col-md-6" style="text-align:end;">
+        </div>*@
+</div>
+@*<div class="col-md-12" style="text-align:right">
+        <label style="font-weight:bold">&nbsp;</label><br />
+        <button style="width:200px;" onclick="ExporttoExcel(2)" title="Export to Excel" class="btn btn-primary">Export to Excel</button>
+    </div>
+    <div>
+        &nbsp;
+    </div>*@
+<div class="card">
+    <div class="card-content collapse show">
+        <div class="card-body card-dashboard dataTables_wrapper dt-bootstrap">
+            <div class="table-responsive" id='showData'>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+       
+        $(".desutj").css("display", "none");
+        //var today = new Date();
+        //var dd = String(today.getDate()).padStart(2, '0');
+        //var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        //var yyyy = today.getFullYear();
+        //today = dd + '-' + mm + '-' + yyyy;
+        var now = new Date();
+        var day = ("0" + now.getDate()).slice(-2);
+        var month = ("0" + (now.getMonth() + 1)).slice(-2);
+        var today = now.getFullYear() + "-" + (month) + "-" + (day);
+
+        var now1 = new Date();
+        now1.setDate(now.getDate() - 5);
+        var day1 = ("0" + now1.getDate()).slice(-2);
+        var month1 = ("0" + (now1.getMonth() + 1)).slice(-2);
+        var today1 = now1.getFullYear() + "-" + (month1) + "-" + (day1);
+        $("#StartDate").val(today1);
+        $("#EndDate").val(today);
+     getMemeberList();
+    })
+    $(".btnfile").click(function () {
+        getMemeberList();
+    })
+
+    function getMemeberList() {
+        $(".desutj").css("display", "block");
+        $.ajax({
+            url: '@Url.Action("UserReportData", "Report")',
+            type: "POST",
+            data: { "StartDate": $("#StartDate").val(), "EndDate": $("#EndDate").val() },
+            success: function (data) {
+            
+            var myBooks = JSON.parse(data);
+            let col = [];
+            for (let i = 0; i < myBooks.length; i++) {
+              for (let key in myBooks[i]) {
+                if (col.indexOf(key) === -1) {
+                  col.push(key);
+                }
+              }
+            }
+            // Create a table.
+            const table = document.createElement("table");
+            table.classList.add("table");
+            table.classList.add("table-striped");
+            table.classList.add("table-bordered");
+            table.setAttribute("id", "Example");
+            table.style.width = "100%";
+            const thead = document.createElement("thead");
+            table.appendChild(thead);
+            // Create table header row using the extracted headers above.
+            let tr = thead.insertRow(-1);                   // table row.
+
+            for (let i = 0; i < col.length; i++) {
+              let th = document.createElement("th");      // table header.
+              th.innerHTML = col[i];
+              tr.appendChild(th);
+            }
+            const tbody = document.createElement("tbody");
+            table.appendChild(tbody);
+            // add json data to the table as rows.
+            for (let i = 0; i < myBooks.length; i++) {
+
+              tr = tbody.insertRow(-1);
+
+              for (let j = 0; j < col.length; j++) {
+                let tabCell = tr.insertCell(-1);
+                tabCell.innerHTML = myBooks[i][col[j]];
+              }
+            }
+
+           
+            // Now, add the newly created table with json data, to a container.
+            const divShowData = document.getElementById('showData');
+            divShowData.innerHTML = "";
+            divShowData.appendChild(table);
+
+             $('#Example').DataTable({
+                        'paging': true,
+                        'lengthChange': true,
+                        'searching': true,
+                        "order": [],
+                        'info': true,
+                        'autoWidth': true,
+                 dom: '<"row"<"col-sm-12 col-md-4"B><"col-sm-12 col-md-4"l><"col-sm-12 col-md-4 "f>>rt<"bottom"ip><"clear">',
+                 buttons: [
+                     {
+                         extend: 'excelHtml5',
+                         title: 'User Report'
+                     }
+                 ]
+                    });
+                $(".desutj").css("display", "none");
+            },
+            error: function (Result) {
+            }
+        });
+
+ }
+    
+
+    // function ExporttoExcel(iii) {
+    //        $.ajax({
+    //        url: '@Url.Action("ExportExcelData", "Report")',
+    //            type: "GET",
+    //            data: {
+    //                "Report": iii,
+    //            },
+    //            success: function (data) {
+
+    //            var bytes = Base64ToBytes(data.fileContents);
+    //            //var bytes = new Uint8Array(data);
+    //            var blob = new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    //            var link = document.createElement('a');
+    //            link.href = window.URL.createObjectURL(blob);
+    //            link.download = "CenterReport.xlsx";
+    //            link.click();
+    //        },
+    //        error: function (Result) {
+    //        }
+    //    });
+    //}
+    //function Base64ToBytes(base64) {
+    //    var s = window.atob(base64);
+    //    var bytes = new Uint8Array(s.length);
+    //    for (var i = 0; i < s.length; i++) {
+    //        bytes[i] = s.charCodeAt(i);
+    //    }
+    //    return bytes;
+    //}
+</script>
