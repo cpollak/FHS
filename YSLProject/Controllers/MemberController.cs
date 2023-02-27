@@ -459,17 +459,20 @@ namespace YSLProject.Controllers
                 obj1.Comment = MemberData.Comment;
                 obj1.TempRecertMonth = MemberData.TempRecertMonth;
                 obj1.RecertMonth = obj.RecertMonth != null ? (obj.RecertMonth != "" ? DateTime.ParseExact(obj.RecertMonth, "MMM", CultureInfo.CurrentCulture).Month.ToString() : "0") : "0";
-                string[] counrs = obj.CountyCode.ToString().Split(' ');
+                
                 bool ischeck = true;
-                if (counrs.Length > 1)
+                if (obj.CountyCode != null)
                 {
-                    bool CountryCo = counrs[1].StartsWith("0");
-                    if (CountryCo == true)
+                    string[] counrs = obj.CountyCode.ToString().Split(' ');
+                    if (counrs.Length > 1)
                     {
-                        ischeck = false;
+                        bool CountryCo = counrs[1].StartsWith("0");
+                        if (CountryCo == true)
+                        {
+                            ischeck = false;
+                        }
                     }
                 }
-
                 if (!String.IsNullOrEmpty(obj.RecertMonth))
                 {
                     if (obj.RecertMonth.ToLower() == "dec")
@@ -1060,38 +1063,41 @@ namespace YSLProject.Controllers
                     else
                     {
                         var memb = _context.MemberMaster.AsTracking().Where(s => s.ResidentID.Trim() == ResidentId && s.Facility == objM.Facility && s.MembershipStatus != 99 && s.DisenrolmentDate.ToString() == null).AsNoTracking().FirstOrDefault();
-                        string[] counrs = memb.CountyCode.Split(' ');
-                        bool ischecked = true;
-                        if (counrs.Length > 1)
+                        if (memb.CountyCode != null)
                         {
-                            bool CountryCo = counrs[1].StartsWith("0");
-                            if (CountryCo == true)
+                            string[] counrs = memb.CountyCode.Split(' ');
+                            bool ischecked = true;
+                            if (counrs.Length > 1)
                             {
-                                ischecked = false;
+                                bool CountryCo = counrs[1].StartsWith("0");
+                                if (CountryCo == true)
+                                {
+                                    ischecked = false;
+                                }
                             }
-                        }
 
-                        if (!String.IsNullOrEmpty(memb.RecertMonth))
-                        {
-                            if (memb.RecertMonth == "12")
+                            if (!String.IsNullOrEmpty(memb.RecertMonth))
+                            {
+                                if (memb.RecertMonth == "12")
+                                {
+                                    obj1.CaseType = "SSI";
+                                }
+                                else if (ischecked == false)
+                                {
+                                    obj1.CaseType = "PA";
+                                }
+                                else
+                                    obj1.CaseType = "";
+                            }
+                            else
                             {
                                 obj1.CaseType = "SSI";
                             }
-                            else if (ischecked == false)
-                            {
-                                obj1.CaseType = "PA";
-                            }
-                            else
-                                obj1.CaseType = "";
+                            memb.MembershipStatus = 3;
+                            memb.Status = null;
+                            _context.MemberMaster.Update(memb);
+                            _context.SaveChanges();
                         }
-                        else
-                        {
-                            obj1.CaseType = "SSI";
-                        }
-                        memb.MembershipStatus = 3;
-                        memb.Status = null;
-                        _context.MemberMaster.Update(memb);
-                        _context.SaveChanges();
                     }
                 }
             }
@@ -1530,7 +1536,10 @@ namespace YSLProject.Controllers
         {
             foreach (DataRow dr in dt.Rows)
             {
-
+                if (dr["MedicaidID"].ToString().Trim() == "UR10996M")
+                {
+                    string test = ";";
+                }
                 MemberMaster obj1 = new MemberMaster();
                 MemberMaster obj2 = new MemberMaster();
                 string Medicaid = (dr.ItemArray != null ? dr.ItemArray[3].ToString().Trim() : null);
@@ -1672,7 +1681,7 @@ namespace YSLProject.Controllers
         {
             foreach (DataRow dr in dt.Rows)
             {
-
+               
                 MemberMaster obj1 = new MemberMaster();
                 string Medicaid = (dr.ItemArray != null ? dr.ItemArray[4].ToString().Trim() : null);
                 string ResidentId = (dr.ItemArray != null ? dr.ItemArray[1].ToString().Trim() : null);
@@ -4639,7 +4648,7 @@ namespace YSLProject.Controllers
             var sortColumn = HttpContext.Request.Form["columns[" + HttpContext.Request.Form["order[0][column]"].FirstOrDefault() + "][name]"].FirstOrDefault();
             var sortColumnDir = HttpContext.Request.Form["order[0][dir]"].FirstOrDefault();
             var searchValue = HttpContext.Request.Form["search[value]"].FirstOrDefault();
-            var List = _context.memberMasterSPs.FromSqlRaw("SP_AssignMaster @Spara,@SearchbyName,@SortColumn,@SortOrder,@AssignId,@Offset,@Limit",
+            var List = _context.GetAssignMasterSP.FromSqlRaw("SP_AssignMaster @Spara,@SearchbyName,@SortColumn,@SortOrder,@AssignId,@Offset,@Limit",
                                        new Object[]
                                        {
                                            new SqlParameter("@Spara", "1"),
@@ -4672,7 +4681,7 @@ namespace YSLProject.Controllers
             });
 
             var count = _context.MemberMaster.Where(a => a.AssignId != AssignID).Count();
-            var recordsFiltere = _context.memberMasterSPs.FromSqlRaw("SP_AssignMaster @Spara,@SearchbyName,@SortColumn,@SortOrder,@AssignId,@Offset,@Limit",
+            var recordsFiltere = _context.GetAssignMasterSP.FromSqlRaw("SP_AssignMaster @Spara,@SearchbyName,@SortColumn,@SortOrder,@AssignId,@Offset,@Limit",
 
                                       new Object[]
                                       {
@@ -4699,7 +4708,7 @@ namespace YSLProject.Controllers
             var sortColumn = HttpContext.Request.Form["columns[" + HttpContext.Request.Form["order[0][column]"].FirstOrDefault() + "][name]"].FirstOrDefault();
             var sortColumnDir = HttpContext.Request.Form["order[0][dir]"].FirstOrDefault();
             var searchValue = HttpContext.Request.Form["search[value]"].FirstOrDefault();
-            var List = _context.memberMasterSPs.FromSqlRaw("SP_GetAssignedMember @Spara,@SearchbyName,@SortColumn,@SortOrder,@AssignId,@Offset,@Limit",
+            var List = _context.GetAssignedMemberSP.FromSqlRaw("SP_GetAssignedMember @Spara,@SearchbyName,@SortColumn,@SortOrder,@AssignId,@Offset,@Limit",
                                        new Object[]
                                        {
                                            new SqlParameter("@Spara", "1"),
@@ -4732,7 +4741,7 @@ namespace YSLProject.Controllers
             });
 
             var count = _context.MemberMaster.Where(a => a.AssignId == AssignID).Count();
-            var recordsFiltere = _context.memberMasterSPs.FromSqlRaw("SP_GetAssignedMember @Spara,@SearchbyName,@SortColumn,@SortOrder,@AssignId,@Offset,@Limit",
+            var recordsFiltere = _context.GetAssignedMemberSP.FromSqlRaw("SP_GetAssignedMember @Spara,@SearchbyName,@SortColumn,@SortOrder,@AssignId,@Offset,@Limit",
 
                                       new Object[]
                                       {

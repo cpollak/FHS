@@ -29,6 +29,8 @@ namespace YSLProject.Models
         
         public DbSet<GeneralNotes_Old> GeneralNotes_Old { get; set; }
         public DbSet<MemberMasterSP> memberMasterSPs { get; set; }
+        public DbSet<GetAssignedMemberSP> GetAssignedMemberSP { get; set; }
+        public DbSet<GetAssignMasterSP> GetAssignMasterSP { get; set; }
 
         public DbSet<CenterReportModel> CenterReportModelSPs { get; set; }
         public DbSet<CenterReportModelNon> CenterReportModelNonSPs { get; set; }
